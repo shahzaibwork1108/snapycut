@@ -1,0 +1,264 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { useSiteContent } from "../context/SiteContentContext";
+import { getSection } from "../lib/defaultContent";
+
+export default function TermsConditions() {
+  const { content } = useSiteContent();
+  const section = getSection(content, "terms_conditions");
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div>
+      <Navbar />
+
+      <main>
+        {/* Hero */}
+        <div>
+          <div>
+            {/* <span>
+              Legal
+            </span> */}
+            <h1>
+              Terms &amp; Conditions
+            </h1>
+            <p>
+              Snapycut – a brand of SynaryVerse
+            </p>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div>
+          {/* 1 */}
+          <h2>1. Introduction</h2>
+            <p>
+              By accessing and using the services provided by Snapycut ("the Company," "we," "our," or "us"), you agree to comply with and be bound by these Terms and Conditions. If you do not agree to these terms, you are not authorized to use our services.
+            </p>
+          
+
+          {/* 2 */}
+          <h2>2. Services Provided</h2>
+            <p>
+              We offer content strategy, short‑form video editing, AI‑assisted content creation, scripting, thumbnail design, social media content systems, and related digital marketing and content management services. These services are subject to the terms outlined below and to the specific scope of work defined in your proposal, order form, or agreement.
+            </p>
+          
+
+          {/* 3 */}
+          <h2>3. Customer Obligations</h2>
+            <p>
+              You agree to provide accurate, up‑to‑date information when interacting with Snapycut, including contact details, brand guidelines, access to required platforms, raw content, and payment information.
+            </p>
+            <p>You are responsible for:</p>
+            <ul>
+  <li>Ensuring all content, assets, and materials you provide do not infringe any third‑party rights and comply with applicable laws.</li>
+  <li>Maintaining the confidentiality of your accounts and access credentials.</li>
+  <li>All activity that occurs under your accounts, including communication channels and content approvals.</li>
+</ul>
+          
+
+          {/* 4 */}
+          <h2>4. Payment Terms</h2>
+            <p>
+              All services provided by Snapycut are subject to the payment terms agreed upon at the time of purchase, subscription, or contract signing. Unless otherwise stated:
+            </p>
+            <ul>
+  <li>Payments are due as outlined in the invoice, subscription, or agreement.</li>
+  <li>Late or missed payments may result in delays, pauses, or suspension of services.</li>
+  <li>For recurring services or retainers, charges may be processed automatically on the agreed billing cycle until cancelled in accordance with the agreement.</li>
+</ul>
+          
+
+          {/* 5 */}
+          <h2>5. Revisions and Turnaround Time</h2>
+            <p>
+              The number of revisions included depends on the package or plan selected. Details are specified in your proposal, subscription, or order.
+            </p>
+            <p>
+              Snapycut aims to provide high‑quality results and will revise within the agreed scope until your needs are met as defined in your selected package. Typical turnaround times for drafts and revisions are communicated at project start and may vary depending on content volume, complexity, and client responsiveness. Delays in providing feedback, approvals, or required assets may extend timelines.
+            </p>
+          
+
+          {/* 6 */}
+          <h2>6. Refund Policy</h2>
+            <p>
+              Refunds are available only under specific circumstances and in accordance with the refund terms presented at the time of purchase. In general:
+            </p>
+            <ul>
+  <li>Once the primary concept, content system, or initial batch of deliverables has been created, reviewed, or approved, fees are typically non‑refundable.</li>
+  <li>Strategy sessions, onboarding, and consulting components are non‑refundable once delivered.</li>
+  <li>Any approved refund will be processed in line with the policy in your proposal, order form, or subscription terms.</li>
+</ul>
+          
+
+          {/* 7 */}
+          <h2>7. Design, Content Ownership and Rights</h2>
+            <p>Upon full payment for the services rendered:</p>
+            <ul>
+  <li>You own the final approved deliverables created specifically for you (for example: final edited videos, final thumbnails, final scripts, and final graphics), subject to any third‑party license restrictions (such as stock media or AI tool licenses).</li>
+  <li>Snapycut retains ownership of all underlying project files, templates, working files, systems, workflows, and internal tools used to create the deliverables.</li>
+  <li>You grant Snapycut a non‑exclusive, worldwide license to display and reference final deliverables and results (e.g., views, followers, engagement metrics you choose to share) as part of our portfolio, website, and marketing materials, unless you specifically request in writing that we do not do so.</li>
+  <li>You are solely responsible for ensuring that your use of the deliverables complies with platform rules and advertising policies.</li>
+</ul>
+          
+
+          {/* 8 */}
+          <h2>8. Messaging Terms &amp; Conditions</h2>
+            <p>By opting in, you agree to receive SMS, email, and/or platform messages from Snapycut related to:</p>
+            <ul>
+  <li>Service updates and project notifications</li>
+  <li>Content delivery, approvals, and revisions</li>
+  <li>Appointment reminders and billing notices</li>
+  <li>Customer support and service information</li>
+</ul>
+            <p>
+              Message frequency may vary. Message and data rates may apply based on your carrier and plan.
+            </p>
+            <p>
+              For help, use the support contact method provided in your agreement or on our website. You can opt out of marketing messages at any time by using the unsubscribe or STOP instructions included in the message. Transactional or service‑critical messages may still be sent where permitted by law.
+            </p>
+          
+
+          {/* 9 */}
+          <h2>9. Content Creation and Population</h2>
+            <p>Unless explicitly included in your package or agreement:</p>
+            <ul>
+  <li>Snapycut does not automatically provide all original content (such as raw footage or product photography).</li>
+  <li>We may provide scripts, edited clips, AI‑assisted visuals, thumbnails, captions, and related creative assets as part of the service.</li>
+</ul>
+            <p>You are responsible for:</p>
+            <ul>
+  <li>Providing accurate information, brand guidelines, and any required product details.</li>
+  <li>Reviewing and approving all content before it is published on your channels.</li>
+</ul>
+            <p>
+              Where we assist with posting or scheduling on your accounts, you remain responsible for compliance with platform rules and any claims arising from your content.
+            </p>
+          
+
+          {/* 10 */}
+          <h2>10. Confidentiality and Non‑Disclosure</h2>
+            <p>
+              We maintain strict confidentiality regarding your non‑public business information, strategies, and project materials. We do not share, sell, or distribute your confidential information to third parties except:
+            </p>
+            <ul>
+  <li>Where required by law, court order, or government request; or</li>
+  <li>Where you provide explicit written consent; or</li>
+  <li>To trusted vendors and subcontractors solely for the purpose of delivering the services, under appropriate confidentiality obligations.</li>
+</ul>
+          
+
+          {/* 11 */}
+          <h2>11. Customer Support and Communication</h2>
+            <p>
+              Support hours and primary communication channels (such as email, project management tools, or messaging platforms) will be specified in your agreement or onboarding documentation.
+            </p>
+            <p>
+              To ensure quality and accountability, you agree to use only the official contact channels we provide. We are not liable for any issues, delays, or misunderstandings arising from communication through unauthorized or informal channels.
+            </p>
+          
+
+          {/* 12 */}
+          <h2>12. Technical Support</h2>
+            <p>
+              Snapycut may assist with uploading, scheduling, and configuring content on supported platforms when included in your service. Unless explicitly stated in your agreement, we do not provide:
+            </p>
+            <ul>
+  <li>Ongoing technical support for third‑party platforms; or</li>
+  <li>IT support, account recovery, or security management for your devices or systems.</li>
+</ul>
+            <p>
+              You are responsible for maintaining secure access to your accounts and for platform‑level configuration outside the agreed scope.
+            </p>
+          
+
+          {/* 13 */}
+          <h2>13. Third‑Party Tools and Services</h2>
+            <p>
+              Our services may incorporate or rely on third‑party platforms and tools (for example: social networks, AI tools, stock libraries, hosting platforms, or analytics tools).
+            </p>
+            <p>
+              We do not control or guarantee the availability, performance, or policies of these third parties. Any issues, suspensions, or changes arising from third‑party services are outside our responsibility, although we will make reasonable efforts to help you navigate them where possible.
+            </p>
+          
+
+          {/* 14 */}
+          <h2>14. Changes to Terms</h2>
+            <p>
+              Snapycut reserves the right to modify these Terms and Conditions at any time. Material changes will be communicated by updating this page and/or via email or in‑app notice where appropriate.
+            </p>
+            <p>
+              Your continued use of our services after changes are posted constitutes your acceptance of the updated terms. You are encouraged to review these terms periodically.
+            </p>
+          
+
+          {/* 15 */}
+          <h2>15. Limitation of Liability</h2>
+            <p>To the fullest extent permitted by law:</p>
+            <ul>
+  <li>Snapycut will not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to lost profits, lost revenue, loss of data, or business interruption, arising out of or related to your use or inability to use our services, even if we have been advised of the possibility of such damages.</li>
+  <li>Our total aggregate liability for any claim arising out of or relating to the services will be limited to the total amount you have paid to Snapycut for the specific service giving rise to the claim during the three (3) months preceding the event.</li>
+  <li>Results such as views, reach, engagement, conversions, or revenue are influenced by many factors outside our control, and Snapycut does not guarantee any specific performance or outcome.</li>
+</ul>
+          
+
+          {/* 16 */}
+          <h2>16. Governing Law</h2>
+            <p>
+              These Terms and Conditions shall be governed by and construed in accordance with the applicable laws of the jurisdiction specified in your service agreement or, if none is specified, the laws of the jurisdiction where Snapycut is legally registered and operates, without regard to its conflict of law principles.
+            </p>
+          
+
+          {/* 17 */}
+          <h2>17. Contact Information</h2>
+            <p>
+              For any questions or clarifications regarding these Terms and Conditions or your services with Snapycut, please contact us using the official contact details provided on our website or in your agreement.
+            </p>
+            <div>
+              <p>Snapycut</p>
+              <p>Email: <a href="mailto:hello@snapycut.com">hello@snapycut.com</a></p>
+  <p>Phone: +1 929-597-1197</p>
+              <p>Website: <a href="https://www.snapycut.com">https://www.snapycut.com</a></p>
+            </div>
+            
+            </>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+/* ── Reusable helpers ─────────────────────────────────────────── */
+
+function Section({ title, children }: { title?: string; children: React.ReactNode }) {
+  return (
+    <section>
+      {title && (
+        <h2>
+          {title}
+        </h2>
+      )}
+      {children}
+    </section>
+  );
+}
+
+function List({ items }: { items: string[] }) {
+  return (
+    <ul>
+      {items.map((item, i) => (
+        <li key={i}>
+          <span />
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}

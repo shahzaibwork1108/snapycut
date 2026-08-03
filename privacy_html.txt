@@ -1,0 +1,267 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { useSiteContent } from "../context/SiteContentContext";
+import { getSection } from "../lib/defaultContent";
+
+export default function PrivacyPolicy() {
+  const { content } = useSiteContent();
+  const section = getSection(content, "privacy_policy");
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div>
+      <Navbar />
+
+      <main>
+        {/* Hero */}
+        <div>
+          <div>
+            {/* <span>
+              Legal
+            </span> */}
+            <h1>
+              Privacy Policy
+            </h1>
+            {/* <p>
+              Effective date: [Insert Date] &nbsp;·&nbsp; Snapycut – a brand of SynaryVerse
+            </p> */}
+          </div>
+        </div>
+
+        {/* Body */}
+        <div>
+          {/* Intro */}
+          
+            <p>
+              Snapycut ("Snapycut", "we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit{" "}
+              <a href="https://www.snapycut.com">https://www.snapycut.com</a>{" "}
+              (the "Website") and use our content and video services, including our Content System and AI Content System (collectively, the "Services").
+            </p>
+            <p>
+              By using our Website or Services, you agree to the collection and use of information in accordance with this Privacy Policy.
+            </p>
+          
+
+          {/* Section 1 */}
+          <h2>Information We Collect</h2>
+            <p>We may collect the following categories of information:</p>
+
+            <h3>1. Personal Information you provide directly</h3>
+            <ul>
+  <li>Name</li>
+  <li>Email address</li>
+  <li>Phone number</li>
+  <li>Social media handles or profile links (e.g., YouTube, TikTok, Instagram)</li>
+  <li>Company name, role, and industry</li>
+  <li>Billing details and limited payment-related information (processed via third‑party payment providers)</li>
+  <li>Information you provide when you book a call, fill out a form, or contact us</li>
+  <li>Testimonials, feedback, and survey responses</li>
+</ul>
+
+            <h3>2. Content and project information</h3>
+            <ul>
+  <li>Raw video files, audio, images, scripts, brand assets, and other media you share for editing or production</li>
+  <li>Brand guidelines, messaging, and creative briefs</li>
+  <li>Project notes, revisions, and communication history related to your projects</li>
+</ul>
+
+            <h3>3. Automatically collected information</h3>
+            <p>When you visit our Website, we may automatically collect:</p>
+            <ul>
+  <li>IP address</li>
+  <li>Browser type and version</li>
+  <li>Device information</li>
+  <li>Pages visited and time spent on the Website</li>
+  <li>Referring/exit pages</li>
+  <li>General usage and interaction data</li>
+</ul>
+            <p>This information may be collected through cookies, pixels, and similar tracking technologies.</p>
+          
+
+          {/* Section 2 */}
+          <h2>How We Use Your Information</h2>
+            <p>We use the information we collect for the following purposes:</p>
+            <ul>
+  <li>To provide, operate, and improve our Services</li>
+  <li>To manage your projects, process orders, and deliver edited content</li>
+  <li>To communicate with you about your account, bookings, and project updates</li>
+  <li>To respond to inquiries, support requests, and feedback</li>
+  <li>To personalize your experience and recommend relevant content or services</li>
+  <li>To send you marketing communications, newsletters, and promotional offers (where permitted by law and/or where you have opted in)</li>
+  <li>To analyze Website performance, improve user experience, and optimize our marketing</li>
+  <li>To maintain security, prevent fraud, and enforce our terms and policies</li>
+  <li>To comply with legal obligations and respond to lawful requests</li>
+</ul>
+          
+
+          {/* Section 3 */}
+          <h2>AI Processing and Automation</h2>
+            <p>As an agency focused on AI‑assisted content, we may use AI tools and automated systems to:</p>
+            <ul>
+  <li>Generate, enhance, or edit scripts, captions, thumbnails, and video content</li>
+  <li>Analyze performance metrics and content effectiveness</li>
+  <li>Streamline workflows, quality control, and creative variations</li>
+</ul>
+            <p>We process your content and data solely for the purpose of delivering and improving our Services. We do not sell your personal information to third parties for their own marketing purposes.</p>
+            <p>Where we use third‑party AI tools or platforms, we take reasonable steps to ensure those providers respect and protect your data in line with this Policy and applicable laws.</p>
+          
+
+          {/* Section 4 */}
+          <h2>Communications, SMS, and Email</h2>
+            <p>We may use your contact details to:</p>
+            <ul>
+  <li>Confirm bookings and calls</li>
+  <li>Share project updates, revisions, and approvals</li>
+  <li>Send important service‑related notifications</li>
+  <li>Share newsletters, offers, and marketing content (where permitted)</li>
+</ul>
+            <p>If we use SMS or messaging apps for service‑related communication:</p>
+            <ul>
+  <li>Phone numbers are collected and used only to deliver service‑related messages (e.g., project updates, reminders, support).</li>
+  <li>We do not share mobile numbers with third parties for their marketing or promotional purposes.</li>
+  <li>You can opt out of promotional messages by following the unsubscribe instructions in the message or contacting us directly.</li>
+</ul>
+            <p>You can unsubscribe from marketing emails at any time by clicking the "unsubscribe" link in the footer of our emails or contacting us.</p>
+          
+
+          {/* Section 5 */}
+          <h2>Cookies and Tracking Technologies</h2>
+            <p>We use cookies and similar technologies to:</p>
+            <ul>
+  <li>Remember your preferences and settings</li>
+  <li>Understand how visitors use our Website</li>
+  <li>Improve performance, design, and user experience</li>
+  <li>Measure and optimize marketing campaigns</li>
+</ul>
+            <p>You can usually control cookies through your browser settings. If you choose to disable cookies, some features of the Website may not function properly.</p>
+          
+
+          {/* Section 6 */}
+          <h2>How We Share Your Information</h2>
+            <p>We do not rent or sell your personal information to third parties for their own marketing. We may share your information in the following limited circumstances:</p>
+            <ul>
+  <li>Service providers and partners: With trusted third‑party vendors who help us operate the Website, process payments, host content, provide analytics, email delivery, customer support, and AI tools or infrastructure—only to the extent necessary to perform these services.</li>
+  <li>Legal and safety: To comply with applicable laws, regulations, or legal processes, or to respond to lawful requests; to protect the rights, property, or safety of Snapycut, our clients, or the public.</li>
+  <li>Business transfers: In connection with a merger, acquisition, restructuring, or sale of all or part of our assets, your information may be transferred as part of that transaction, subject to continued protection consistent with this Policy.</li>
+</ul>
+            <p>All third parties receiving personal information are required to protect it and to use it only for the purposes for which we disclose it.</p>
+          
+
+          {/* Section 7 */}
+          <h2>Data Retention</h2>
+            <p>We retain your personal information and project content for as long as:</p>
+            <ul>
+  <li>You maintain an active relationship or account with us;</li>
+  <li>We need it to provide the Services and support you;</li>
+  <li>We are required to keep it to comply with legal, tax, and accounting obligations; or</li>
+  <li>It is reasonably necessary for our legitimate business interests (e.g., record‑keeping, dispute resolution).</li>
+</ul>
+            <p>You may request deletion or limitation of certain data as described in the "Your Rights and Choices" section below.</p>
+          
+
+          {/* Section 8 */}
+          <h2>Security</h2>
+            <p>We take reasonable technical and organizational measures to protect your personal information from unauthorized access, use, alteration, or disclosure. These measures may include:</p>
+            <ul>
+  <li>Secure data transmission (e.g., SSL/TLS)</li>
+  <li>Access controls and authentication for internal systems</li>
+  <li>Regular monitoring of our systems and infrastructure</li>
+</ul>
+            <p>However, no method of transmission or storage over the Internet is completely secure. While we strive to protect your personal information, we cannot guarantee absolute security.</p>
+          
+
+          {/* Section 9 */}
+          <h2>Your Rights and Choices</h2>
+            <p>Depending on your location and applicable law, you may have rights regarding your personal information, including:</p>
+            <ul>
+  <li>Accessing the personal information we hold about you</li>
+  <li>Requesting correction of inaccurate or incomplete information</li>
+  <li>Requesting deletion of your personal information (subject to legal obligations)</li>
+  <li>Objecting to or restricting certain processing activities</li>
+  <li>Withdrawing consent where processing is based on consent</li>
+  <li>Opting out of marketing communications</li>
+</ul>
+            <p>To exercise any of these rights, please contact us using the details in the "Contact Us" section. We may need to verify your identity before processing your request.</p>
+          
+
+          {/* Section 10 */}
+          <h2>Third‑Party Websites and Links</h2>
+            <p>Our Website may contain links to third‑party websites, platforms, or tools (for example, booking tools, payment processors, or social media platforms). We are not responsible for the privacy practices or content of those third‑party sites. We encourage you to review their privacy policies before providing any personal information.</p>
+          
+
+          {/* Section 11 */}
+          <h2>Testimonials and Case Studies</h2>
+            <p>With your permission, we may display testimonials, case studies, or success stories on our Website or marketing materials, which may include your name, social profile, business name, and results achieved.</p>
+            <p>If you wish to update or remove your testimonial, please contact us.</p>
+          
+
+          {/* Section 12 */}
+          <h2>Children's Privacy</h2>
+            <p>Our Website and Services are not directed to children under the age of 13 (or the minimum age required in your jurisdiction), and we do not knowingly collect personal information from children. If we learn that we have collected personal information from a child, we will take steps to delete that information promptly.</p>
+          
+
+          {/* Section 13 */}
+          <h2>Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time. When we do, we will revise the "Effective date" at the top of the Policy. Significant changes may also be communicated via email or a notice on the Website.</p>
+            <p>Your continued use of the Website or Services after any changes become effective will constitute your acknowledgement of the updated Policy.</p>
+          
+
+          {/* Contact */}
+          <h2>Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy or how we handle your personal information, please contact us at:</p>
+            <div>
+              <p>Snapycut</p>
+              <p>Email: <a href="mailto:hello@snapycut.com">hello@snapycut.com</a></p>
+  <p>Phone: +1 929-597-1197</p>
+              <p>Website: <a href="https://www.snapycut.com">https://www.snapycut.com</a></p>
+            </div>
+            
+            </>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+/* ── Reusable helpers ─────────────────────────────────────────── */
+
+function Section({ title, children }: { title?: string; children: React.ReactNode }) {
+  return (
+    <section>
+      {title && (
+        <h2>
+          {title}
+        </h2>
+      )}
+      {children}
+    </section>
+  );
+}
+
+function SubHeading({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <h3 className={`text-white font-semibold text-base mb-3 ${className}`}>
+      {children}
+    </h3>
+  );
+}
+
+function List({ items }: { items: string[] }) {
+  return (
+    <ul>
+      {items.map((item, i) => (
+        <li key={i}>
+          <span />
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
