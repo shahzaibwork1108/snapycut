@@ -47,7 +47,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
                 className="h-7 sm:h-10 w-auto object-contain transition-all"
                 width="242"
                 height="40"
-                loading="eager"
+                loading="lazy"
                 decoding="async"
               />
               {tagline && (

@@ -1,7 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+// Performance optimizations in this file:
+// - Use `LazyYouTube` to defer iframe creation until user interaction.
+// - Avoid autoplay and set native videos to `preload="none"`.
+// - Component memoized with React.memo to reduce re-renders.
+import React, { useState, useRef, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getVideoUrls, getSection, getExtraString } from "../lib/defaultContent";
 import { Volume2, VolumeX } from "lucide-react";
+import LazyYouTube from "./LazyYouTube";
 
 // Extracts YouTube ID from a URL
 const getYtId = (src: string): string | null => {
@@ -23,16 +28,15 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
 
   const ytId = getYtId(src);
 
-  // For native <video>: play/pause on visibility
+  // For native <video>: DO NOT autoplay; load only when user interacts
   useEffect(() => {
     if (ytId) return;
     const video = videoRef.current;
     if (!video) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          video.play().catch(() => {});
-        } else {
+        // do not auto-play when visible; let user decide to play
+        if (!entries[0].isIntersecting) {
           video.pause();
         }
       },
@@ -81,17 +85,7 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
           <div
             className="w-full h-[390px] sm:h-[570px] relative overflow-hidden bg-black"
           >
-            {embedSrc && (
-              <iframe
-                ref={iframeRef}
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                src={embedSrc}
-                title={`Short Form Video ${index}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-              />
-            )}
+              <LazyYouTube youtubeId={ytId} title={`Short Form ${index}`} className="w-full h-full" />
           </div>
           {/* Always-on overlay blocks iframe interaction */}
           <div className="absolute inset-0 z-10" />
@@ -105,7 +99,7 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
         />
       )}
 
@@ -130,7 +124,7 @@ interface ShortFormProps {
   onOpenBooking: () => void;
 }
 
-export default function ShortForm({ onOpenBooking }: ShortFormProps) {
+function ShortForm({ onOpenBooking }: ShortFormProps) {
   const { content } = useSiteContent();
   const section = getSection(content, "short_form");
   const heading2Green = getExtraString(section, "heading2_green", "Short Form");
@@ -220,3 +214,5 @@ export default function ShortForm({ onOpenBooking }: ShortFormProps) {
     </section>
   );
 }
+
+export default React.memo(ShortForm);

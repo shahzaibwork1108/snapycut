@@ -50,17 +50,18 @@ export default function CreativesPortfolio({ onOpenBooking }: CreativesPortfolio
             <div className="flex items-center gap-8 w-max px-4 animate-marquee-left">
               {duplicatedRow1.map((img, idx) => (
                 <div key={idx} className="flex-shrink-0 w-[240px] sm:w-[320px] md:w-[380px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-950 border border-neutral-900 shadow-2xl group cursor-pointer">
-                  <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
                 </div>
               ))}
             </div>
+        </div>
         <div className="relative w-full overflow-hidden py-4 mt-4">
           <div className="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
           <div className="flex items-center gap-8 w-max px-4 animate-marquee-right">
             {duplicatedRow2.map((img, idx) => (
               <div key={idx} className="flex-shrink-0 w-[240px] sm:w-[320px] md:w-[380px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-950 border border-neutral-900 shadow-2xl group cursor-pointer">
-                <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async" />
               </div>
             ))}
           </div>

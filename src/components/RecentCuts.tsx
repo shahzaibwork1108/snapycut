@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getVideoUrls, getSection } from "../lib/defaultContent";
+import LazyYouTube from "./LazyYouTube";
 
 // ─── Single video card with IntersectionObserver play/pause ───────────────
 const HorizontalVideo = ({ src }: { src: string }) => {
@@ -38,21 +39,10 @@ const HorizontalVideo = ({ src }: { src: string }) => {
         className="w-full h-full relative overflow-hidden bg-black"
         style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       >
-        <iframe
-          className="absolute top-1/2 left-1/2 pointer-events-none"
-          style={{ 
-            width: '105%', 
-            height: '105%', 
-            transform: 'translate(-50%, -50%) translateZ(0)',
-            backfaceVisibility: 'hidden'
-          }}
-          src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${ytId}&modestbranding=1&playsinline=1`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          loading="lazy"
-        />
-        {/* Transparent overlay to block interaction */}
-        <div className="absolute inset-0 z-10" />
+        <div className="absolute inset-0">
+          <LazyYouTube youtubeId={ytId} title={`Video ${ytId}`} className="w-full h-full" />
+        </div>
+        {/* transparent overlay removed — LazyYouTube controls interaction */}
       </div>
     );
   }
@@ -65,7 +55,7 @@ const HorizontalVideo = ({ src }: { src: string }) => {
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="none"
     />
   );
 };
@@ -117,21 +107,9 @@ const IntersectionVideo = ({ src }: { src: string }) => {
         className="w-full h-[280px] sm:h-[400px] relative overflow-hidden bg-black"
         style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       >
-        <iframe
-          className="absolute top-1/2 left-1/2 pointer-events-none"
-          style={{ 
-            width: '150%', 
-            height: '150%', 
-            transform: 'translate(-50%, -50%) translateZ(0)',
-            backfaceVisibility: 'hidden'
-          }}
-          src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${ytId}&modestbranding=1&playsinline=1`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          loading="lazy"
-        />
-        {/* Transparent overlay to block interaction */}
-        <div className="absolute inset-0 z-10" />
+        <div className="absolute inset-0">
+          <LazyYouTube youtubeId={ytId} title={`Short video ${ytId}`} className="w-full h-full" />
+        </div>
       </div>
     );
   }
@@ -143,13 +121,12 @@ const IntersectionVideo = ({ src }: { src: string }) => {
       className="w-full h-[280px] sm:h-[400px] object-cover"
       muted
       loop
-      autoPlay
+      // Do not autoplay — load only when user interacts
       playsInline
-      preload="metadata"
+      preload="none"
       onLoadedData={() => setHasLoadedFrame(true)}
-      onCanPlay={() => {
-        if (isVisibleRef.current) videoRef.current?.play().catch(() => {});
-      }}
+      // Do not autoplay when the element becomes visible; leave play to user action
+      onCanPlay={() => { /* noop */ }}
     />
   );
 };
@@ -160,7 +137,11 @@ interface RecentCutsProps {
   onOpenBooking: () => void;
 }
 
-export default function RecentCuts({ onOpenBooking }: RecentCutsProps) {
+function RecentCuts({ onOpenBooking }: RecentCutsProps) {
+  // Performance optimizations:
+  // - Use `LazyYouTube` for YouTube entries to avoid loading iframe/YouTube JS until user interaction.
+  // - Set native <video> to `preload="none"` and disabled autoplay-on-visibility.
+  // - Component memoized with React.memo to avoid unnecessary re-renders.
   const { content } = useSiteContent();
   const section = getSection(content, "recent_cuts");
   const videos = getVideoUrls("saas_horizontal", content);
@@ -288,3 +269,5 @@ export default function RecentCuts({ onOpenBooking }: RecentCutsProps) {
     </section>
   );
 }
+
+export default React.memo(RecentCuts);

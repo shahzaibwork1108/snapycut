@@ -1,5 +1,9 @@
+// Performance optimizations:
+// - Replaced direct YouTube iframe with `LazyYouTube` to delay heavy third-party loads until user interaction.
+// - Set local `<video>` to `preload="none"` to avoid downloading large media before user intent.
 import { useState, useRef, useEffect } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import LazyYouTube from "./LazyYouTube";
 
 interface PortraitPlayerProps {
   onOpenBooking: () => void;
@@ -79,13 +83,8 @@ export default function PortraitPlayer({ onOpenBooking, videoUrl }: PortraitPlay
       <div className="relative h-[600px] w-full rounded-2xl border-4 border-[#c1eb40] bg-neutral-950 overflow-hidden cursor-pointer group shadow-[0_0_40px_rgba(193,235,64,0.3)]">
         
         {isYouTube && youtubeId ? (
-            <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=0&mute=1&controls=1&rel=0&fs=1&origin=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen={true}
-              frameBorder="0"
-            />
+          // Use LazyYouTube so the heavy YouTube iframe is only created after user interaction
+          <LazyYouTube youtubeId={youtubeId} title="Portrait video" className="w-full h-full" poster={undefined} />
         ) : (
           <>
             <video
@@ -95,6 +94,7 @@ export default function PortraitPlayer({ onOpenBooking, videoUrl }: PortraitPlay
               className="h-full w-full object-cover"
               onClick={handleTogglePlay}
               playsInline
+              preload="none" // Avoid preloading large video bytes until user interacts
             />
 
             {!isPlaying && (

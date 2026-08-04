@@ -58,7 +58,7 @@ export default function ThumbnailPortfolio({ onOpenBooking }: ThumbnailPortfolio
                   onClick={() => setSelectedImage(img)}
                   className="flex-shrink-0 w-[300px] sm:w-[460px] md:w-[520px] aspect-[16/9] rounded-2xl overflow-hidden bg-neutral-950 border border-neutral-800/80 shadow-2xl cursor-pointer group"
                 >
-                  <img src={img} alt="portfolio" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <img src={img} alt="portfolio" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" decoding="async" />
                 </div>
               ))}
             </div>
@@ -81,6 +81,8 @@ export default function ThumbnailPortfolio({ onOpenBooking }: ThumbnailPortfolio
             alt="Full view" 
             className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain rounded-xl shadow-2xl" 
             onClick={(e) => e.stopPropagation()} 
+            loading="lazy"
+            decoding="async"
           />
         </div>,
         document.body

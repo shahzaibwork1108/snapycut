@@ -92,6 +92,8 @@ export default function Testimonials() {
                       alt={testi.name}
                       referrerPolicy="no-referrer"
                       className="h-11 w-11 rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="text-left">
                       <h4 className="text-sm font-bold text-neutral-100 leading-tight">{testi.name}</h4>

@@ -19,7 +19,7 @@ async function fetchSiteContent(): Promise<SiteContent> {
   const supabase = await getSupabase();
   if (!supabase) return defaultContent;
 
-  const [seoRes, sectionsRes, imagesRes, thumbsRes, videosRes, testiRes, clientRes] = await Promise.all([
+  const resp = await Promise.all([
     supabase.from("seo_settings").select("*").eq("id", 1).maybeSingle(),
     supabase.from("site_sections").select("*"),
     supabase.from("site_images").select("*"),
@@ -27,7 +27,8 @@ async function fetchSiteContent(): Promise<SiteContent> {
     supabase.from("site_videos").select("*").order("sort_order"),
     supabase.from("testimonials").select("*").order("sort_order"),
     supabase.from("client_testimonials").select("*"),
-  ]);
+  ]) as any;
+  const [seoRes, sectionsRes, imagesRes, thumbsRes, videosRes, testiRes, clientRes] = resp;
 
   const content: SiteContent = structuredClone(defaultContent);
 

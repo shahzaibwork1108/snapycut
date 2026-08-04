@@ -1,7 +1,12 @@
-import { useRef, useState, useEffect } from "react";
+// Performance optimizations in this file:
+// - Replace YouTube iframes with `LazyYouTube` so heavy network loads and JS are deferred until user interaction.
+// - Set native video `preload` to `none` to avoid unnecessary downloads on initial load.
+// - Component wrapped with `React.memo` to reduce re-renders.
+import React, { useRef, useState, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getVideoUrls, getSection } from "../lib/defaultContent";
 import { Volume2, VolumeX } from "lucide-react";
+import LazyYouTube from "./LazyYouTube";
 
 // Detect touch device
 const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -64,19 +69,9 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {ytId ? (
-        <>
-            <iframe
-              ref={iframeRef}
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${ytId}&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              loading="lazy"
-            />
-          {/* Transparent overlay to block iframe interaction */}
-          <div className="absolute inset-0 z-10" />
-        </>
+        <div className="absolute inset-0">
+          <LazyYouTube youtubeId={ytId} title={`Ad ${ytId}`} className="w-full h-full" />
+        </div>
       ) : (
         <video
           ref={videoRef}
@@ -85,7 +80,7 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
         />
       )}
 
@@ -110,7 +105,7 @@ interface RecentCutsProps {
   onOpenBooking: () => void;
 }
 
-export default function Row2({ onOpenBooking }: RecentCutsProps) {
+function Row2({ onOpenBooking }: RecentCutsProps) {
   const { content } = useSiteContent();
   const section = getSection(content, "ai_video_ads");
   const demoVideos = getVideoUrls("ai_video_ads", content);
@@ -197,3 +192,5 @@ export default function Row2({ onOpenBooking }: RecentCutsProps) {
     </section>
   );
 }
+
+export default React.memo(Row2);

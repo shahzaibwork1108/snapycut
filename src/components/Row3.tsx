@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getYoutubeIds, getSection } from "../lib/defaultContent";
 import { Volume2, VolumeX } from "lucide-react";
+import LazyYouTube from "./LazyYouTube";
 
 // Detect touch device
 const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -38,11 +39,7 @@ const AvatarVideoCard = ({ videoId, index }: { videoId: string; index: number })
         setIsMuted(!isMuted);
     };
 
-    // Autoplay + muted always. controls=0 hides all YouTube UI. enablejsapi=1 allows postMessage commands.
-    // origin param is required for iOS Safari postMessage & autoplay
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const embedSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
-
+    // Use LazyYouTube so iframes are only created after user interaction.
     return (
         <div
             ref={containerRef}
@@ -50,21 +47,9 @@ const AvatarVideoCard = ({ videoId, index }: { videoId: string; index: number })
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* YouTube iframe */}
-            {embedSrc && (
-                <iframe
-                    ref={iframeRef}
-                    className="absolute inset-0 w-full h-full scale-[1.05] pointer-events-none"
-                    src={embedSrc}
-                    title={`AI Avatar Video ${index}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                />
-            )}
-
-            {/* Transparent overlay blocks accidental iframe interaction */}
-            <div className="absolute inset-0 z-10" />
+            <div className="absolute inset-0 w-full h-full scale-[1.05]">
+                <LazyYouTube youtubeId={videoId} title={`AI Avatar Video ${index}`} className="w-full h-full" />
+            </div>
 
             {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
             <button
@@ -83,7 +68,7 @@ const AvatarVideoCard = ({ videoId, index }: { videoId: string; index: number })
     );
 };
 
-export default function RecentCuts({ onOpenBooking }: RecentCutsProps) {
+function RecentCuts({ onOpenBooking }: RecentCutsProps) {
     const { content } = useSiteContent();
     const section = getSection(content, "ai_avatar");
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -160,3 +145,5 @@ export default function RecentCuts({ onOpenBooking }: RecentCutsProps) {
         </section>
     );
 }
+
+export default React.memo(RecentCuts);

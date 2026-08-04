@@ -95,6 +95,8 @@ export default function ClientSay({ onOpenBooking }: ClientSayProps) {
                       alt={mikelTestimonial.name}
                       referrerPolicy="no-referrer"
                       className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-103 brightness-[0.75] contrast-[1.05]"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
 
@@ -236,6 +238,8 @@ export default function ClientSay({ onOpenBooking }: ClientSayProps) {
                       alt={viktorTestimonial.name}
                       referrerPolicy="no-referrer"
                       className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-103 brightness-[0.75] contrast-[1.05]"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
 

@@ -39,6 +39,8 @@ export default function Footer() {
                     srcSet={logoSrcSet}
                     alt={getImageAlt(content, "logo", "Snapycut Logo")}
                     className="h-9 w-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </a>
               </div>

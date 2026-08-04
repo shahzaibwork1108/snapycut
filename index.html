@@ -45,20 +45,44 @@
   <link rel="dns-prefetch" href="https://i.ytimg.com" />
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
 </head>
-  <!-- Meta Pixel Code -->
-  <script defer>
-  window.addEventListener('load', () => {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://connect.facebook.net/en_US/fbevents.js';
-    script.onload = () => {
-      if (window.fbq) {
-        window.fbq('init', '1057589916702507');
-        window.fbq('track', 'PageView');
-      }
+  <!-- Meta Pixel Code (deferred until user interaction or idle) -->
+  <script>
+  (function(){
+    let loaded = false;
+    function loadPixel(){
+      if (loaded) return; loaded = true;
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+      script.onload = () => {
+        try {
+          if ((window as any).fbq) {
+            (window as any).fbq('init', '1057589916702507');
+            (window as any).fbq('track', 'PageView');
+          }
+        } catch(e) { /* ignore */ }
+      };
+      document.head.appendChild(script);
+    }
+
+    // Trigger load on first user interaction or when browser is idle
+    const onInteraction = () => { loadPixel(); removeListeners(); };
+    const removeListeners = () => {
+      ['pointerdown','keydown','scroll','touchstart'].forEach(ev => window.removeEventListener(ev, onInteraction, { passive: true }));
+      document.removeEventListener('visibilitychange', onVisibility);
     };
-    document.head.appendChild(script);
-  });
+    const onVisibility = () => { if (document.visibilityState === 'hidden') loadPixel(); };
+
+    ['pointerdown','keydown','scroll','touchstart'].forEach(ev => window.addEventListener(ev, onInteraction, { passive: true }));
+    document.addEventListener('visibilitychange', onVisibility);
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => { if (!loaded) loadPixel(); }, { timeout: 3000 });
+    } else {
+      // Fallback: load after a short delay if no interaction
+      setTimeout(() => { if (!loaded) loadPixel(); }, 4500);
+    }
+  })();
   </script>
   <!-- End Meta Pixel Code -->
 
