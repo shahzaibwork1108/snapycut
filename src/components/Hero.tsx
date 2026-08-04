@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import PortraitPlayer from "./PortraitPlayer";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getImageUrl, getImageAlt, getSection } from "../lib/defaultContent";
@@ -10,9 +11,29 @@ export default function Hero({ onOpenBooking }: HeroProps) {
   const { content } = useSiteContent();
   const section = getSection(content, "hero");
   const heroVideo = content.videos.hero[0]?.url ?? "https://youtube.com/shorts/T-LO45f-59o?si=KcSAxQ2y5V_4txZY";
+  const [shouldRenderPortrait, setShouldRenderPortrait] = useState(false);
+  const heroRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!heroRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldRenderPortrait(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" }
+    );
+
+    observer.observe(heroRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
+      ref={heroRef}
       className="relative min-h-screen pt-45 pb-56 flex flex-col items-center justify-start overflow-hidden px-4 sm:px-6 lg:px-8 bg-[#030303]"
       id="hero-section"
       style={{ fontFamily: "'Cabinet Grotesk', sans-serif" }}
@@ -129,11 +150,13 @@ export default function Hero({ onOpenBooking }: HeroProps) {
           style={{ animationDelay: "0.7s", animationFillMode: "both" }}
           id="portrait-player-section"
         >
-          <div className="w-full max-w-[600px] mx-auto">  
-            <PortraitPlayer
-              onOpenBooking={() => console.log("Booking clicked")}
-              videoUrl={heroVideo}
-            />
+          <div className="w-full max-w-[600px] mx-auto">
+            {shouldRenderPortrait ? (
+              <PortraitPlayer
+                onOpenBooking={() => console.log("Booking clicked")}
+                videoUrl={heroVideo}
+              />
+            ) : null}
           </div>
         </div>
 
