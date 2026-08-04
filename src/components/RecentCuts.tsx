@@ -16,10 +16,16 @@ const HorizontalVideo = ({ src }: { src: string }) => {
     const video = videoRef.current;
     if (!video) return;
 
+    video.muted = true;
+    video.playbackRate = 0.8;
+    video.autoplay = true;
+    video.playsInline = true;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            video.load();
             video.play().catch(() => {});
           } else {
             video.pause();
@@ -52,6 +58,7 @@ const HorizontalVideo = ({ src }: { src: string }) => {
       ref={videoRef}
       src={src}
       className="w-full h-full object-cover"
+      autoPlay
       muted
       loop
       playsInline
@@ -74,6 +81,11 @@ const IntersectionVideo = ({ src }: { src: string }) => {
     if (ytId) return; // Do not apply observer to iframe
     const video = videoRef.current;
     if (!video) return;
+
+    video.muted = true;
+    video.playbackRate = 0.8;
+    video.autoplay = true;
+    video.playsInline = true;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -119,13 +131,12 @@ const IntersectionVideo = ({ src }: { src: string }) => {
       ref={videoRef}
       src={src}
       className="w-full h-[280px] sm:h-[400px] object-cover"
+      autoPlay
       muted
       loop
-      // Do not autoplay — load only when user interacts
       playsInline
       preload="none"
       onLoadedData={() => setHasLoadedFrame(true)}
-      // Do not autoplay when the element becomes visible; leave play to user action
       onCanPlay={() => { /* noop */ }}
     />
   );

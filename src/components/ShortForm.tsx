@@ -33,15 +33,26 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
     if (ytId) return;
     const video = videoRef.current;
     if (!video) return;
+
+    video.muted = true;
+    video.playbackRate = 0.8;
+    video.autoplay = true;
+    video.playsInline = true;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        // do not auto-play when visible; let user decide to play
-        if (!entries[0].isIntersecting) {
-          video.pause();
-        }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.load();
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
       },
-      { rootMargin: "50px", threshold: 0.3 }
+      { rootMargin: "50px", threshold: 0.1 }
     );
+
     observer.observe(video);
     return () => observer.disconnect();
   }, [ytId]);
@@ -96,6 +107,7 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
           ref={videoRef}
           src={src}
           className="w-full h-[390px] sm:h-[570px] object-cover"
+          autoPlay
           muted
           loop
           playsInline

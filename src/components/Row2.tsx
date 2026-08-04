@@ -30,10 +30,20 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
     if (ytId) return;
     const video = videoRef.current;
     if (!video) return;
+
+    video.muted = true;
+    video.playbackRate = 0.8;
+    video.autoplay = true;
+    video.playsInline = true;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) video.play().catch(() => {});
-        else video.pause();
+        if (entries[0].isIntersecting) {
+          video.load();
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
       },
       { threshold: 0.2 }
     );
@@ -77,6 +87,7 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
           ref={videoRef}
           src={src}
           className="w-full h-full object-cover"
+          autoPlay
           muted
           loop
           playsInline
