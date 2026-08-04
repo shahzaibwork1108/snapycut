@@ -56,9 +56,9 @@
       script.src = 'https://connect.facebook.net/en_US/fbevents.js';
       script.onload = () => {
         try {
-          if ((window as any).fbq) {
-            (window as any).fbq('init', '1057589916702507');
-            (window as any).fbq('track', 'PageView');
+          if (window.fbq) {
+            window.fbq('init', '1057589916702507');
+            window.fbq('track', 'PageView');
           }
         } catch(e) { /* ignore */ }
       };
@@ -77,7 +77,7 @@
     document.addEventListener('visibilitychange', onVisibility);
 
     if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(() => { if (!loaded) loadPixel(); }, { timeout: 3000 });
+      window.requestIdleCallback(() => { if (!loaded) loadPixel(); }, { timeout: 3000 });
     } else {
       // Fallback: load after a short delay if no interaction
       setTimeout(() => { if (!loaded) loadPixel(); }, 4500);
