@@ -12,16 +12,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://res.cloudinary.com" />
 
-  <!-- ═══ FONTS: Non-blocking — loaded in parallel, won't block render ═══ -->
+  <!-- ═══ LCP: preload the hero image so the largest content is available early ═══ -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="preload"
+    as="image"
+    href="/assets/hero/hero-bg-image-1.png"
+    fetchpriority="high"
+    imagesrcset="/assets/hero/hero-bg-image-1.png 1x"
+  />
+
+  <!-- ═══ FONTS: lightweight and non-blocking — only load the primary brand font ═══ -->
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
     media="print"
     onload="this.media='all'"
   />
   <!-- Fallback for no-JS -->
   <noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   </noscript>
 
 
