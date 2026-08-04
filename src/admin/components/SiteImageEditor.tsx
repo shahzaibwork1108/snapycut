@@ -12,7 +12,7 @@ interface SiteImageEditorProps {
 export default function SiteImageEditor({ imageKey, label, url, alt, onChange }: SiteImageEditorProps) {
   const fallback =
     defaultContent.images[imageKey]?.cloudinary_url ??
-    (imageKey === "logo" ? "/assets/navbar/logo-3.png" : "/assets/hero/hero-bg-image-1.png");
+    (imageKey === "logo" ? "/assets/navbar/logo.png" : "/assets/hero/hero-bg-image-1-opt.jpg");
 
   return (
     <div className="bg-[#111] border border-neutral-800 rounded-xl p-6 space-y-4">

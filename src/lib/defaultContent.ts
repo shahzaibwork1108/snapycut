@@ -47,12 +47,12 @@ export const defaultContent: SiteContent = {
   images: {
     hero_bg: {
       image_key: "hero_bg",
-      cloudinary_url: "/assets/hero/hero-bg-image-1.png",
+      cloudinary_url: "/assets/hero/hero-bg-image-1-opt.jpg",
       alt_text: "Hero Background Mesh",
     },
     logo: {
       image_key: "logo",
-      cloudinary_url: "/assets/navbar/logo-3.png",
+      cloudinary_url: "/assets/navbar/logo.png",
       alt_text: "Snapycut Logo",
     },
   },

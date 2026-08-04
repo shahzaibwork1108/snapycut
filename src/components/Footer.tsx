@@ -6,6 +6,11 @@ import { getImageUrl, getImageAlt, getSection, getExtraString } from "../lib/def
 export default function Footer() {
   const { content } = useSiteContent();
   const section = getSection(content, "footer");
+  const logoUrl = getImageUrl(content, "logo", "/assets/navbar/logo.png");
+  const logoSrcSet =
+    logoUrl === "/assets/navbar/logo.png"
+      ? "/assets/navbar/logo.png 1x, /assets/navbar/logo-3.png 2x"
+      : undefined;
 
   const socialLinks = {
     facebook: getExtraString(section, "facebook", "https://www.facebook.com/Snapycut/"),
@@ -30,7 +35,8 @@ export default function Footer() {
               <div className="flex items-center select-none mb-2" id="footer-branding-logo">
                 <a href="/">
                   <img
-                    src={getImageUrl(content, "logo", "/assets/navbar/logo-3.png")}
+                    src={logoUrl}
+                    srcSet={logoSrcSet}
                     alt={getImageAlt(content, "logo", "Snapycut Logo")}
                     className="h-9 w-auto object-contain"
                   />

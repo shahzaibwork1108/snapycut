@@ -10,6 +10,11 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
   const { content } = useSiteContent();
   const section = getSection(content, "navbar");
   const tagline = getExtraString(section, "tagline", "Powered by Synaryverse");
+  const logoUrl = getImageUrl(content, "logo", "/assets/navbar/logo.png");
+  const logoSrcSet =
+    logoUrl === "/assets/navbar/logo.png"
+      ? "/assets/navbar/logo.png 1x, /assets/navbar/logo-3.png 2x"
+      : undefined;
 
   return (
     <header 
@@ -36,7 +41,8 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
           >
             <div className="flex flex-col items-start">
               <img
-                src={getImageUrl(content, "logo", "/assets/navbar/logo-3.png")}
+                src={logoUrl}
+                srcSet={logoSrcSet}
                 alt={getImageAlt(content, "logo", "Snapycut Logo")}
                 className="h-7 sm:h-10 w-auto object-contain transition-all"
                 width="242"
