@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // ═══ ABOVE-FOLD: Load immediately — user sees these first ═══
 import Navbar from "./components/Navbar";
@@ -108,6 +109,9 @@ export default function App() {
       <Suspense fallback={null}>
         <DiscountPopup onOpenBooking={handleOpenBooking} />
       </Suspense>
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 }
