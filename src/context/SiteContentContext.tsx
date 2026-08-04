@@ -46,12 +46,12 @@ async function fetchSiteContent(): Promise<SiteContent> {
       const key = row.section_key as SectionKey;
       if (content.sections[key]) {
         content.sections[key] = {
-          title: row.title ?? content.sections[key].title,
-          title_highlight: row.title_highlight ?? content.sections[key].title_highlight,
-          subtitle: row.subtitle ?? content.sections[key].subtitle,
-          description: row.description ?? content.sections[key].description,
-          cta_text: row.cta_text ?? content.sections[key].cta_text,
-          cta_url: row.cta_url ?? content.sections[key].cta_url,
+          title: row.title?.trim() ? row.title : content.sections[key].title,
+          title_highlight: row.title_highlight?.trim() ? row.title_highlight : content.sections[key].title_highlight,
+          subtitle: row.subtitle?.trim() ? row.subtitle : content.sections[key].subtitle,
+          description: row.description?.trim() ? row.description : content.sections[key].description,
+          cta_text: row.cta_text?.trim() ? row.cta_text : content.sections[key].cta_text,
+          cta_url: row.cta_url?.trim() ? row.cta_url : content.sections[key].cta_url,
           extra: { ...content.sections[key].extra, ...(row.extra ?? {}) },
         };
       }
