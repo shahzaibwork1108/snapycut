@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getSection, getExtraString } from "../lib/defaultContent";
 

@@ -23,7 +23,7 @@ export default defineConfig(() => {
     },
     // ═══ PRE-BUNDLE: Warm up key dependencies for faster dev server startup ═══
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom', 'motion/react'],
+      include: ['react', 'react-dom', 'react-router-dom'],
     },
     build: {
       modulePreload: false,
@@ -35,16 +35,12 @@ export default defineConfig(() => {
           manualChunks: {
             // Core React runtime — changes rarely, cache forever
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-            // Animation library — large, cache separately
-            'vendor-motion': ['motion/react'],
             // Data layer — separate so the app shell stays lighter
             'vendor-supabase': ['@supabase/supabase-js'],
             // Icon set — split to avoid pulling it into the main shell
             'vendor-icons': ['lucide-react'],
             // Markdown rendering — only needed on the content pages
             'vendor-markdown': ['react-markdown', 'rehype-raw'],
-            // 3D helper — only needed by the portfolio carousel
-            'vendor-three': ['three'],
           },
         },
       },

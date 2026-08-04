@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
 
 interface CreativesPortfolioProps {
@@ -48,36 +47,23 @@ export default function CreativesPortfolio({ onOpenBooking }: CreativesPortfolio
         <div className="relative w-full overflow-hidden py-4">
           <div className="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
-          <motion.div
-            className="flex items-center gap-8 w-max px-4"
-            animate={isPlaying ? { x: ["-33.333%", 0] } : {}}
-            transition={{ ease: "linear", duration: 28, repeat: Infinity }}
-            style={{ x: "-33.333%" }}
-          >
-            {duplicatedRow1.map((img, idx) => (
-              <div key={idx} className="flex-shrink-0 w-[240px] sm:w-[320px] md:w-[380px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-950 border border-neutral-900 shadow-2xl group cursor-pointer">
-                <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Row 2 */}
+            <div className="flex items-center gap-8 w-max px-4 animate-marquee-left">
+              {duplicatedRow1.map((img, idx) => (
+                <div key={idx} className="flex-shrink-0 w-[240px] sm:w-[320px] md:w-[380px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-950 border border-neutral-900 shadow-2xl group cursor-pointer">
+                  <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                </div>
+              ))}
+            </div>
         <div className="relative w-full overflow-hidden py-4 mt-4">
           <div className="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-[#010101] via-[#010101]/40 to-transparent z-20 pointer-events-none" />
-          <motion.div
-            className="flex items-center gap-8 w-max px-4"
-            animate={isPlaying ? { x: [0, "-33.333%"] } : {}}
-            transition={{ ease: "linear", duration: 28, repeat: Infinity }}
-            style={{ x: 0 }}
-          >
+          <div className="flex items-center gap-8 w-max px-4 animate-marquee-right">
             {duplicatedRow2.map((img, idx) => (
               <div key={idx} className="flex-shrink-0 w-[240px] sm:w-[320px] md:w-[380px] aspect-square rounded-[2rem] overflow-hidden bg-neutral-950 border border-neutral-900 shadow-2xl group cursor-pointer">
                 <img src={img} alt="creative" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Footer */}

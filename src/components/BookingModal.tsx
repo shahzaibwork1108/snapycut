@@ -1,5 +1,4 @@
 import { useState, FormEvent } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { X, Calendar, Clock, Sparkles, CheckCircle2, ChevronRight, Video, Target, TrendingUp, Scissors } from "lucide-react";
 
 interface BookingModalProps {
@@ -89,26 +88,19 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const timeSlots = ["10:00 AM", "11:30 AM", "1:00 PM", "2:30 PM", "4:00 PM", "5:30 PM"];
 
   return (
-    <AnimatePresence>
+    <> 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             onClick={resetModal}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in"
             id="modal-backdrop"
           />
 
           {/* Modal Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-purple-500/20 bg-neutral-950 p-6 md:p-8 text-white shadow-2xl shadow-purple-950/20"
+          <div
+            className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-purple-500/20 bg-neutral-950 p-6 md:p-8 text-white shadow-2xl shadow-purple-950/20 animate-scale-in"
             id="modal-card"
           >
             {/* Top Close Button */}
@@ -405,9 +397,9 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 </button>
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

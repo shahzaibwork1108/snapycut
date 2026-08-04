@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { supabase, isSupabaseConfigured } from "../lib/supabase";
+import { getSupabase, isSupabaseConfigured } from "../lib/publicSupabase";
 import { defaultContent } from "../lib/defaultContent";
 import type { SiteContent, VideoSection, SectionKey } from "../types/content";
 
@@ -16,6 +16,7 @@ const SiteContentContext = createContext<SiteContentContextValue>({
 });
 
 async function fetchSiteContent(): Promise<SiteContent> {
+  const supabase = await getSupabase();
   if (!supabase) return defaultContent;
 
   const [seoRes, sectionsRes, imagesRes, thumbsRes, videosRes, testiRes, clientRes] = await Promise.all([

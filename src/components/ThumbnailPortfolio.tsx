@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion } from "motion/react";
 import { X } from "lucide-react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getThumbnailRows, getSection } from "../lib/defaultContent";
@@ -52,7 +51,7 @@ export default function ThumbnailPortfolio({ onOpenBooking }: ThumbnailPortfolio
 
         {rows.map((row, i) => (
           <div key={i} className="relative w-full overflow-hidden py-3">
-            <motion.div className="flex items-center gap-6 w-max px-4" animate={isPlaying ? { x: i % 2 === 0 ? ["-33.333%", 0] : [0, "-33.333%"] } : {}} transition={{ ease: "linear", duration: 30, repeat: Infinity }}>
+            <div className={`flex items-center gap-6 w-max px-4 ${i % 2 === 0 ? "animate-marquee-left" : "animate-marquee-right"}`}>
               {[...row, ...row, ...row].map((img, idx) => (
                 <div
                   key={idx}
@@ -62,7 +61,7 @@ export default function ThumbnailPortfolio({ onOpenBooking }: ThumbnailPortfolio
                   <img src={img} alt="portfolio" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         ))}
 
