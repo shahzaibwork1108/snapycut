@@ -2,22 +2,56 @@
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate
 
-# JS/CSS/images: immutable, long lived
+# JS/CSS: immutable, long lived (hashed filenames from Vite)
 /*.js
   Cache-Control: public, max-age=31536000, immutable
 /*.css
   Cache-Control: public, max-age=31536000, immutable
+
+# Precompressed assets (.gz/.br) — cache alongside originals
+/*.js.gz
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: gzip
+/*.js.br
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: br
+/*.css.gz
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: gzip
+/*.css.br
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: br
+
+# All build assets (hashed filenames — safe to cache forever)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Serve other common static types long-term
-/*.svg
+# Image formats — long-term cache for all static images
+/*.avif
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
   Cache-Control: public, max-age=31536000, immutable
 /*.png
   Cache-Control: public, max-age=31536000, immutable
 /*.jpg
   Cache-Control: public, max-age=31536000, immutable
-/*.webp
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+# Font files — long-term cache
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+/*.otf
   Cache-Control: public, max-age=31536000, immutable
 
 # Videos: cache long-term, allow range requests for streaming
@@ -30,3 +64,17 @@
 /videos/*
   Cache-Control: public, max-age=31536000, immutable
   Accept-Ranges: bytes
+
+# Catch-all: any other static file type gets long-term caching
+/*.mp4
+  Cache-Control: public, max-age=31536000, immutable
+  Accept-Ranges: bytes
+/*.webm
+  Cache-Control: public, max-age=31536000, immutable
+  Accept-Ranges: bytes
+/*.json
+  Cache-Control: public, max-age=31536000, immutable
+/*.txt
+  Cache-Control: public, max-age=31536000, immutable
+/*.xml
+  Cache-Control: public, max-age=31536000, immutable
