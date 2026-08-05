@@ -18,7 +18,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-40 border-b border-neutral-900/60 bg-black/60 backdrop-blur-md animate-fade-up"
+      className="fixed top-0 left-0 right-0 z-40 border-b border-neutral-900/60 bg-black backdrop-blur-md animate-fade-up"
       style={{ animationFillMode: "both" }}
       id="main-header"
     >
