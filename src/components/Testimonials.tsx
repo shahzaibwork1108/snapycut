@@ -14,7 +14,10 @@ export default function Testimonials() {
     ? content.testimonials
     : defaultContent.testimonials;
 
+  const rafRef = useRef<number | null>(null);
+
   const checkScrollState = () => {
+    rafRef.current = null;
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setShowLeftArrow(scrollLeft > 10);
@@ -22,13 +25,25 @@ export default function Testimonials() {
     }
   };
 
+  const handleScrollEvent = () => {
+    // Throttle layout reads with requestAnimationFrame to avoid forced reflows
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(checkScrollState);
+    }
+  };
+
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (el) {
-      el.addEventListener("scroll", checkScrollState);
+      el.addEventListener("scroll", handleScrollEvent);
       checkScrollState();
     }
-    return () => el?.removeEventListener("scroll", checkScrollState);
+    return () => {
+      el?.removeEventListener("scroll", handleScrollEvent);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   const handleScroll = (direction: "left" | "right") => {

@@ -92,13 +92,18 @@ export default function CarouselRow({
         planes.push(plane);
       });
 
-      // Resize event listener
+      // Resize event listener with rAF throttling to avoid forced reflows
+      let resizeRafId: number | null = null;
       const handleResize = () => {
-        if (!container || !renderer || !camera) return;
-        const w = container.clientWidth;
-        camera.aspect = w / height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, height);
+        if (resizeRafId !== null) return;
+        resizeRafId = requestAnimationFrame(() => {
+          resizeRafId = null;
+          if (!container || !renderer || !camera) return;
+          const w = container.clientWidth;
+          camera.aspect = w / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, height);
+        });
       };
       window.addEventListener("resize", handleResize);
 
@@ -140,6 +145,7 @@ export default function CarouselRow({
       // Strict Cleanups to prevent black memory crashes
       (container as any)._cleanup = () => {
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
         window.removeEventListener("resize", handleResize);
         renderer.domElement.removeEventListener("click", handleCanvasClick);
         
