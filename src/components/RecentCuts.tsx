@@ -1,11 +1,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getVideoUrls, getSection } from "../lib/defaultContent";
+import { Volume2, VolumeX } from "lucide-react";
 import LazyYouTube from "./LazyYouTube";
 
-// ─── Single video card with IntersectionObserver play/pause ───────────────
+// Detect touch device
+const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+// ─── Single video card with IntersectionObserver play/pause + mute button ───
 const HorizontalVideo = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isTouch] = useState(isTouchDevice);
 
   // Extract YouTube ID if it's a YT link
   const ytMatch = src?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
@@ -25,7 +32,6 @@ const HorizontalVideo = ({ src }: { src: string }) => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            video.load();
             video.play().catch(() => {});
           } else {
             video.pause();
@@ -39,6 +45,14 @@ const HorizontalVideo = ({ src }: { src: string }) => {
     return () => observer.disconnect();
   }, [ytId]);
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+    setIsMuted(!isMuted);
+  };
+
   if (ytId) {
     return (
       <div 
@@ -48,30 +62,47 @@ const HorizontalVideo = ({ src }: { src: string }) => {
         <div className="absolute inset-0">
           <LazyYouTube youtubeId={ytId} title={`Video ${ytId}`} className="w-full h-full" />
         </div>
-        {/* transparent overlay removed — LazyYouTube controls interaction */}
       </div>
     );
   }
 
   return (
-    <video
-      ref={videoRef}
-      src={src}
-      className="w-full h-full object-cover"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="none"
-    />
+    <div
+      className="w-full h-full relative overflow-hidden bg-black group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <video
+        ref={videoRef}
+        src={src}
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
+
+      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
+      <button
+        onClick={toggleMute}
+        className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
+          isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+        } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+      </button>
+    </div>
   );
 };
 
-// ─── Short Form Video Component ──────────────────────────────────────────
+// ─── Short Form Video Component with mute button ──────────────────────────
 const IntersectionVideo = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isVisibleRef = useRef(false);
-  const [hasLoadedFrame, setHasLoadedFrame] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isTouch] = useState(isTouchDevice);
 
   // Extract YouTube ID if it's a YT link
   const ytMatch = src?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
@@ -90,9 +121,7 @@ const IntersectionVideo = ({ src }: { src: string }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          isVisibleRef.current = entry.isIntersecting;
           if (entry.isIntersecting) {
-            video.load();
             video.play().catch(() => {});
           } else {
             video.pause();
@@ -113,6 +142,14 @@ const IntersectionVideo = ({ src }: { src: string }) => {
     };
   }, [ytId]);
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+    setIsMuted(!isMuted);
+  };
+
   if (ytId) {
     return (
       <div 
@@ -127,18 +164,33 @@ const IntersectionVideo = ({ src }: { src: string }) => {
   }
 
   return (
-    <video
-      ref={videoRef}
-      src={src}
-      className="w-full h-[280px] sm:h-[400px] object-cover"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="none"
-      onLoadedData={() => setHasLoadedFrame(true)}
-      onCanPlay={() => { /* noop */ }}
-    />
+    <div
+      className="w-full h-[280px] sm:h-[400px] relative overflow-hidden bg-black group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <video
+        ref={videoRef}
+        src={src}
+        className="w-full h-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
+
+      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
+      <button
+        onClick={toggleMute}
+        className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
+          isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+        } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+      </button>
+    </div>
   );
 };
 
@@ -149,60 +201,19 @@ interface RecentCutsProps {
 }
 
 function RecentCuts({ onOpenBooking }: RecentCutsProps) {
-  // Performance optimizations:
-  // - Use `LazyYouTube` for YouTube entries to avoid loading iframe/YouTube JS until user interaction.
-  // - Set native <video> to `preload="none"` and disabled autoplay-on-visibility.
-  // - Component memoized with React.memo to avoid unnecessary re-renders.
   const { content } = useSiteContent();
   const section = getSection(content, "recent_cuts");
   const videos = getVideoUrls("saas_horizontal", content);
   const shortVideos = getVideoUrls("saas_short", content);
 
   const [isPaused, setIsPaused] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
   const [isShortHovered, setIsShortHovered] = useState(false);
-  const scrollAmountRef = useRef<number>(0);
 
-  // Duplicate videos 3× so the seamless loop has plenty of runway
-  const loopedVideos = [...videos, ...videos, ...videos];
+  // Duplicate videos once for seamless CSS transform loop
+  const loopedVideos = [...videos, ...videos];
   
-  // Smooth infinite loop ke liye duplicate
+  // Duplicate short videos once for seamless CSS transform loop
   const duplicatedShortVideos = [...shortVideos, ...shortVideos];
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    let isVisible = false;
-    const observer = new IntersectionObserver((entries) => {
-        isVisible = entries[0].isIntersecting;
-    });
-    observer.observe(container);
-
-    const speed = 0.8;
-
-    const animate = () => {
-      if (isVisible && !isShortHovered && container) {
-        scrollAmountRef.current += speed;
-        
-        if (scrollAmountRef.current >= container.scrollWidth / 2) {
-          scrollAmountRef.current = 0;
-        }
-        
-        container.scrollLeft = scrollAmountRef.current;
-      }
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      observer.disconnect();
-    };
-  }, [isShortHovered]);
 
   return (
     <section className="relative py-12 sm:py-16 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -222,12 +233,18 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
 
       {/* ── Marquee Track (Short Form Vertical Videos) ──────────────── */}
       <div
-        ref={scrollRef}
         className="w-full overflow-hidden relative z-10 mb-12 sm:mb-16"
         onMouseEnter={() => setIsShortHovered(true)}
         onMouseLeave={() => setIsShortHovered(false)}
       >
-        <div className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4">
+        <div
+          className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4"
+          style={{
+            animation: `marquee-scroll-recent-short 40s linear infinite`,
+            animationPlayState: isShortHovered ? "paused" : "running",
+            willChange: "transform",
+          }}
+        >
           {duplicatedShortVideos.map((video, index) => (
             <div
               key={index}
@@ -246,11 +263,11 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
         onMouseLeave={() => setIsPaused(false)}
       >
         <div
-          ref={trackRef}
           className="flex gap-4 w-max"
           style={{
-            animation: `marquee-scroll 60s linear infinite`,
+            animation: `marquee-scroll-recent-horizontal 60s linear infinite`,
             animationPlayState: isPaused ? "paused" : "running",
+            willChange: "transform",
           }}
         >
           {loopedVideos.map((src, idx) => (
@@ -270,11 +287,15 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
       <div className="absolute left-0 top-0 w-24 sm:w-40 h-full bg-gradient-to-r from-[#020202] to-transparent pointer-events-none z-20" />
       <div className="absolute right-0 top-0 w-24 sm:w-40 h-full bg-gradient-to-l from-[#020202] to-transparent pointer-events-none z-20" />
 
-      {/* ── CSS keyframe injected via style tag ──────────────────────── */}
+      {/* ── CSS keyframes injected via style tag ──────────────────────── */}
       <style>{`
-        @keyframes marquee-scroll {
+        @keyframes marquee-scroll-recent-short {
           0%   { transform: translateX(0); }
-          100% { transform: translateX(-33.3333%); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-scroll-recent-horizontal {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
     </section>

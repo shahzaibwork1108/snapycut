@@ -19,3 +19,14 @@
   Cache-Control: public, max-age=31536000, immutable
 /*.webp
   Cache-Control: public, max-age=31536000, immutable
+
+# Videos: cache long-term, allow range requests for streaming
+/horizontal-videos/*
+  Cache-Control: public, max-age=31536000, immutable
+  Accept-Ranges: bytes
+/synaryverse-new-video/*
+  Cache-Control: public, max-age=31536000, immutable
+  Accept-Ranges: bytes
+/videos/*
+  Cache-Control: public, max-age=31536000, immutable
+  Accept-Ranges: bytes

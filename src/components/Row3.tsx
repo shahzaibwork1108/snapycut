@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getYoutubeIds, getSection } from "../lib/defaultContent";
 import { Volume2, VolumeX } from "lucide-react";
@@ -71,44 +71,10 @@ const AvatarVideoCard = ({ videoId, index }: { videoId: string; index: number })
 function RecentCuts({ onOpenBooking }: RecentCutsProps) {
     const { content } = useSiteContent();
     const section = getSection(content, "ai_avatar");
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const animationRef = useRef<number | null>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const scrollAmountRef = useRef<number>(0);
 
     const videoIds = getYoutubeIds(content);
     const duplicatedVideos = [...videoIds, ...videoIds];
-
-    useEffect(() => {
-        const container = scrollRef.current;
-        if (!container) return;
-
-        let isVisible = false;
-        const observer = new IntersectionObserver((entries) => {
-            isVisible = entries[0].isIntersecting;
-        });
-        observer.observe(container);
-
-        const speed = 0.8;
-
-        const animate = () => {
-            if (isVisible && !isHovered && container) {
-                scrollAmountRef.current += speed;
-                if (scrollAmountRef.current >= container.scrollWidth / 2) {
-                    scrollAmountRef.current = 0;
-                }
-                container.scrollLeft = scrollAmountRef.current;
-            }
-            animationRef.current = requestAnimationFrame(animate);
-        };
-
-        animate();
-
-        return () => {
-            if (animationRef.current) cancelAnimationFrame(animationRef.current);
-            observer.disconnect();
-        };
-    }, [isHovered]);
 
     return (
         <section className="relative pt-12 pb-6 sm:pt-16 sm:pb-8 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -125,14 +91,20 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
                 </div>
             </div>
 
-            {/* Auto-scrolling Marquee */}
+            {/* Auto-scrolling Marquee — GPU-accelerated CSS transform */}
             <div
-                ref={scrollRef}
                 className="w-full overflow-hidden relative z-10"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <div className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4">
+                <div
+                    className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4"
+                    style={{
+                        animation: `marquee-scroll-row3 40s linear infinite`,
+                        animationPlayState: isHovered ? "paused" : "running",
+                        willChange: "transform",
+                    }}
+                >
                     {duplicatedVideos.map((videoId, index) => (
                         <AvatarVideoCard key={`${videoId}-${index}`} videoId={videoId} index={index} />
                     ))}
@@ -142,6 +114,13 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
             {/* Gradient overlays */}
             <div className="absolute left-0 top-0 w-16 sm:w-32 h-full bg-gradient-to-r from-[#020202] via-[#020202]/40 sm:via-[#020202]/80 to-transparent pointer-events-none z-20" />
             <div className="absolute right-0 top-0 w-16 sm:w-32 h-full bg-gradient-to-l from-[#020202] via-[#020202]/40 sm:via-[#020202]/80 to-transparent pointer-events-none z-20" />
+
+            <style>{`
+                @keyframes marquee-scroll-row3 {
+                    0%   { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+            `}</style>
         </section>
     );
 }

@@ -1,6 +1,7 @@
 // Performance optimizations in this file:
 // - Replace YouTube iframes with `LazyYouTube` so heavy network loads and JS are deferred until user interaction.
-// - Set native video `preload` to `none` to avoid unnecessary downloads on initial load.
+// - Set native video `preload` to `metadata` for fast start without full download.
+// - GPU-accelerated CSS transform marquee animation (no layout thrashing).
 // - Component wrapped with `React.memo` to reduce re-renders.
 import React, { useRef, useState, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
@@ -39,7 +40,6 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          video.load();
           video.play().catch(() => {});
         } else {
           video.pause();
@@ -91,7 +91,7 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
         />
       )}
 
@@ -121,45 +121,10 @@ function Row2({ onOpenBooking }: RecentCutsProps) {
   const section = getSection(content, "ai_video_ads");
   const demoVideos = getVideoUrls("ai_video_ads", content);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const scrollAmountRef = useRef<number>(0);
 
-  // Duplicate videos so the seamless loop never shows a gap
+  // Duplicate videos once for seamless CSS transform loop
   const loopedVideos = [...demoVideos, ...demoVideos];
-
-  // Auto-scroll marquee at same speed as Row3 and ShortForm (0.8px/frame)
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    let isVisible = false;
-    const observer = new IntersectionObserver((entries) => {
-      isVisible = entries[0].isIntersecting;
-    });
-    observer.observe(container);
-
-    const speed = 0.8;
-
-    const animate = () => {
-      if (isVisible && !isHovered && container) {
-        scrollAmountRef.current += speed;
-        if (scrollAmountRef.current >= container.scrollWidth / 2) {
-          scrollAmountRef.current = 0;
-        }
-        container.scrollLeft = scrollAmountRef.current;
-      }
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      observer.disconnect();
-    };
-  }, [isHovered]);
 
   return (
     <section className="relative py-12 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -179,12 +144,18 @@ function Row2({ onOpenBooking }: RecentCutsProps) {
 
       {/* ── Marquee Track ───────────────────────── */}
       <div
-        ref={scrollRef}
         className="w-full overflow-hidden relative z-10 mb-10"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex gap-4 w-max px-3 sm:px-4">
+        <div
+          className="flex gap-4 w-max px-3 sm:px-4"
+          style={{
+            animation: `marquee-scroll-row2 40s linear infinite`,
+            animationPlayState: isHovered ? "paused" : "running",
+            willChange: "transform",
+          }}
+        >
           {loopedVideos.map((src, idx) => (
             <div
               key={idx}
@@ -200,6 +171,13 @@ function Row2({ onOpenBooking }: RecentCutsProps) {
       {/* ── Edge fade overlays ────────────────────────────────────────── */}
       <div className="absolute left-0 top-0 w-24 sm:w-40 h-full bg-gradient-to-r from-[#020202] to-transparent pointer-events-none z-20" />
       <div className="absolute right-0 top-0 w-24 sm:w-40 h-full bg-gradient-to-l from-[#020202] to-transparent pointer-events-none z-20" />
+
+      <style>{`
+        @keyframes marquee-scroll-row2 {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 // Performance optimizations in this file:
 // - Use `LazyYouTube` to defer iframe creation until user interaction.
-// - Avoid autoplay and set native videos to `preload="none"`.
+// - Set native videos to `preload="metadata"` for fast start without full download.
+// - GPU-accelerated CSS transform marquee animation (no layout thrashing).
 // - Component memoized with React.memo to reduce re-renders.
 import React, { useState, useRef, useEffect } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
@@ -28,7 +29,7 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
 
   const ytId = getYtId(src);
 
-  // For native <video>: DO NOT autoplay; load only when user interacts
+  // For native <video>: autoplay muted, play/pause based on visibility
   useEffect(() => {
     if (ytId) return;
     const video = videoRef.current;
@@ -43,7 +44,6 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            video.load();
             video.play().catch(() => {});
           } else {
             video.pause();
@@ -111,7 +111,7 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
         />
       )}
 
@@ -141,43 +141,10 @@ function ShortForm({ onOpenBooking }: ShortFormProps) {
   const section = getSection(content, "short_form");
   const heading2Green = getExtraString(section, "heading2_green", "Short Form");
   const heading2White = getExtraString(section, "heading2_white", " Content.");
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const scrollAmountRef = useRef<number>(0);
 
   const videos = getVideoUrls("short_form", content);
   const duplicatedVideos = [...videos, ...videos];
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    let isVisible = false;
-    const observer = new IntersectionObserver((entries) => {
-      isVisible = entries[0].isIntersecting;
-    });
-    observer.observe(container);
-
-    const speed = 0.8;
-
-    const animate = () => {
-      if (isVisible && !isHovered && container) {
-        scrollAmountRef.current += speed;
-        if (scrollAmountRef.current >= container.scrollWidth / 2) {
-          scrollAmountRef.current = 0;
-        }
-        container.scrollLeft = scrollAmountRef.current;
-      }
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-      observer.disconnect();
-    };
-  }, [isHovered]);
 
   return (
     <section className="relative py-12 sm:py-16 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -208,13 +175,20 @@ function ShortForm({ onOpenBooking }: ShortFormProps) {
         </div>
       </div>
 
+      {/* Auto-scrolling Marquee — GPU-accelerated CSS transform */}
       <div
-        ref={scrollRef}
         className="w-full overflow-hidden relative z-10"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4">
+        <div
+          className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4"
+          style={{
+            animation: `marquee-scroll-shortform 40s linear infinite`,
+            animationPlayState: isHovered ? "paused" : "running",
+            willChange: "transform",
+          }}
+        >
           {duplicatedVideos.map((video, index) => (
             <ShortFormCard key={`${video}-${index}`} src={video} index={index} />
           ))}
@@ -223,6 +197,13 @@ function ShortForm({ onOpenBooking }: ShortFormProps) {
 
       <div className="absolute left-0 top-0 w-16 sm:w-32 h-full bg-gradient-to-r from-[#020202] via-[#020202]/40 sm:via-[#020202]/80 to-transparent pointer-events-none z-20" />
       <div className="absolute right-0 top-0 w-16 sm:w-32 h-full bg-gradient-to-l from-[#020202] via-[#020202]/40 sm:via-[#020202]/80 to-transparent pointer-events-none z-20" />
+
+      <style>{`
+        @keyframes marquee-scroll-shortform {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 }
