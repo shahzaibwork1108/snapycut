@@ -41,7 +41,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
       {/* ─── BACKGROUND SHADOW/IMAGE CONTAINER ────────────────────────── */}
       <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-0 overflow-hidden flex justify-center items-center">
         {(() => {
-          const rawSrc = getImageUrl(content, "hero_bg", "/assets/hero/hero-bg-image-1.png");
+          const rawSrc = getImageUrl(content, "hero_bg", "/assets/hero/hero-bg-image-1.avif");
           const optimizedSrc = rawSrc.includes("res.cloudinary.com")
             ? rawSrc.replace("/upload/", "/upload/f_avif,q_auto:low,w_1280/")
             : rawSrc;
