@@ -72,8 +72,9 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
     const { content } = useSiteContent();
     const section = getSection(content, "ai_avatar");
     const scrollRef = useRef<HTMLDivElement>(null);
+    const animationRef = useRef<number | null>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+    const scrollAmountRef = useRef<number>(0);
 
     const videoIds = getYoutubeIds(content);
     const duplicatedVideos = [...videoIds, ...videoIds];
@@ -82,13 +83,32 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
         const container = scrollRef.current;
         if (!container) return;
 
+        let isVisible = false;
         const observer = new IntersectionObserver((entries) => {
-            setIsVisible(entries[0]?.isIntersecting ?? false);
-        }, { threshold: 0.15 });
+            isVisible = entries[0].isIntersecting;
+        });
         observer.observe(container);
 
-        return () => observer.disconnect();
-    }, []);
+        const speed = 0.8;
+
+        const animate = () => {
+            if (isVisible && !isHovered && container) {
+                scrollAmountRef.current += speed;
+                if (scrollAmountRef.current >= container.scrollWidth / 2) {
+                    scrollAmountRef.current = 0;
+                }
+                container.scrollLeft = scrollAmountRef.current;
+            }
+            animationRef.current = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+            observer.disconnect();
+        };
+    }, [isHovered]);
 
     return (
         <section className="relative pt-12 pb-6 sm:pt-16 sm:pb-8 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -112,7 +132,7 @@ function RecentCuts({ onOpenBooking }: RecentCutsProps) {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <div className={`video-marquee-track flex gap-3 sm:gap-4 w-max px-3 sm:px-4 ${(!isVisible || isHovered) ? 'paused' : ''}`}>
+                <div className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4">
                     {duplicatedVideos.map((videoId, index) => (
                         <AvatarVideoCard key={`${videoId}-${index}`} videoId={videoId} index={index} />
                     ))}

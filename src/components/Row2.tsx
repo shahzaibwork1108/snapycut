@@ -24,7 +24,6 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isTouch] = useState(isTouchDevice);
-  const [shouldLoad, setShouldLoad] = useState(false);
 
   // For native video: play/pause based on visibility
   useEffect(() => {
@@ -39,17 +38,14 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-
-        if (entry.isIntersecting) {
-          setShouldLoad(true);
+        if (entries[0].isIntersecting) {
+          video.load();
           video.play().catch(() => {});
         } else {
           video.pause();
         }
       },
-      { rootMargin: "300px 0px 300px 0px", threshold: 0.05 }
+      { threshold: 0.2 }
     );
     observer.observe(video);
     return () => observer.disconnect();
@@ -95,7 +91,7 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
           muted
           loop
           playsInline
-          preload={shouldLoad ? "metadata" : "none"}
+          preload="none"
         />
       )}
 
@@ -126,23 +122,44 @@ function Row2({ onOpenBooking }: RecentCutsProps) {
   const demoVideos = getVideoUrls("ai_video_ads", content);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const scrollAmountRef = useRef<number>(0);
 
   // Duplicate videos so the seamless loop never shows a gap
   const loopedVideos = [...demoVideos, ...demoVideos];
 
+  // Auto-scroll marquee at same speed as Row3 and ShortForm (0.8px/frame)
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
+    let isVisible = false;
     const observer = new IntersectionObserver((entries) => {
-      setIsVisible(entries[0]?.isIntersecting ?? false);
-    }, { threshold: 0.2 });
-
+      isVisible = entries[0].isIntersecting;
+    });
     observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
+
+    const speed = 0.8;
+
+    const animate = () => {
+      if (isVisible && !isHovered && container) {
+        scrollAmountRef.current += speed;
+        if (scrollAmountRef.current >= container.scrollWidth / 2) {
+          scrollAmountRef.current = 0;
+        }
+        container.scrollLeft = scrollAmountRef.current;
+      }
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      observer.disconnect();
+    };
+  }, [isHovered]);
 
   return (
     <section className="relative py-12 bg-[#020202] overflow-hidden border-t border-neutral-900/40">
@@ -167,9 +184,7 @@ function Row2({ onOpenBooking }: RecentCutsProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div
-          className={`video-marquee-track flex gap-4 w-max px-3 sm:px-4 ${(!isVisible || isHovered) ? 'paused' : ''}`}
-        >
+        <div className="flex gap-4 w-max px-3 sm:px-4">
           {loopedVideos.map((src, idx) => (
             <div
               key={idx}
