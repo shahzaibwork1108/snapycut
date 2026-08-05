@@ -25,6 +25,8 @@ createRoot(document.getElementById("root")!).render(
       <SiteContentProvider>
         <Suspense fallback={null}>
           <Routes>
+            {/* Support legacy /admin path as an alias to the obfuscated admin route */}
+            <Route path="/admin/*" element={<AdminApp />} />
             <Route path="/admin_1122/*" element={<AdminApp />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />

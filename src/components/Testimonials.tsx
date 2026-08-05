@@ -77,13 +77,14 @@ export default function Testimonials() {
 
           <div
             ref={scrollContainerRef}
-            className="flex items-stretch gap-6 overflow-x-auto no-scrollbar pb-10 px-4 sm:px-2 select-none bg-transparent snap-x snap-mandatory"
+            className="flex items-stretch gap-6 overflow-x-auto no-scrollbar pb-10 px-4 sm:px-2 select-none bg-transparent snap-x snap-mandatory pl-6 pr-6 sm:pl-8 sm:pr-8"
             id="testimonials-cards-scroller"
+            style={{ scrollPaddingInline: '1rem' }}
           >
             {testimonialsList.map((testi, index) => (
               <div
                 key={`${testi.id ?? testi.name}-${index}`}
-                className="flex-shrink-0 w-[310px] sm:w-[380px] md:w-[410px] rounded-[2.2rem] bg-[#343433] py-6 px-8 sm:py-7 sm:px-10 flex flex-col justify-between transition-transform duration-300 snap-center sm:snap-start"
+                className="flex-shrink-0 w-[310px] sm:w-[380px] md:w-[380px] rounded-[2.2rem] bg-[#343433] py-6 px-8 sm:py-7 sm:px-10 flex flex-col justify-between transition-transform duration-300 snap-center sm:snap-start"
               >
                 <div>
                   <div className="flex items-center gap-4">

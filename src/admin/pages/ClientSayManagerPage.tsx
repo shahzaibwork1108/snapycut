@@ -49,6 +49,12 @@ export default function ClientSayManagerPage() {
     setSaving(true);
     let hasError = false;
 
+    if (!supabase) {
+      alert("Supabase is not configured. Can't save client testimonials.");
+      setSaving(false);
+      return;
+    }
+
     for (const slug of SLUGS) {
       const c = clients[slug];
       const { error } = await supabase.from("client_testimonials").upsert({

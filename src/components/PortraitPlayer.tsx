@@ -12,8 +12,10 @@ interface PortraitPlayerProps {
 
 export default function PortraitPlayer({ onOpenBooking, videoUrl }: PortraitPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // Default sound on (false)
+  // Start muted so autoplay works reliably; user can unmute via control
+  const [isMuted, setIsMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -40,9 +42,31 @@ export default function PortraitPlayer({ onOpenBooking, videoUrl }: PortraitPlay
     video.addEventListener("timeupdate", updateProgress);
     video.addEventListener("loadedmetadata", updateDuration);
 
+    // IntersectionObserver: autoplay when visible, pause when out of view
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // ensure muted for autoplay
+            video.muted = true;
+            video.play().then(() => setIsPlaying(true)).catch(() => {});
+          } else {
+            video.pause();
+            setIsPlaying(false);
+          }
+        });
+      },
+      { threshold: 0.4, rootMargin: "0px" }
+    );
+
+    // Observe the container if available, otherwise the video
+    if (containerRef.current) obs.observe(containerRef.current);
+    else obs.observe(video);
+
     return () => {
       video.removeEventListener("timeupdate", updateProgress);
       video.removeEventListener("loadedmetadata", updateDuration);
+      obs.disconnect();
     };
   }, [isYouTube]);
 
@@ -87,15 +111,18 @@ export default function PortraitPlayer({ onOpenBooking, videoUrl }: PortraitPlay
           <LazyYouTube youtubeId={youtubeId} title="Portrait video" className="w-full h-full" poster={undefined} />
         ) : (
           <>
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              muted={isMuted}
-              className="h-full w-full object-cover"
-              onClick={handleTogglePlay}
-              playsInline
-              preload="none" // Avoid preloading large video bytes until user interacts
-            />
+            <div ref={containerRef} className="h-full w-full">
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                muted={isMuted}
+                className="h-full w-full object-cover"
+                onClick={handleTogglePlay}
+                playsInline
+                preload="none"
+                autoPlay
+              />
+            </div>
 
             {!isPlaying && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/20" onClick={handleTogglePlay}>

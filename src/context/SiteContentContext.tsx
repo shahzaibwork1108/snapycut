@@ -71,7 +71,7 @@ async function fetchSiteContent(): Promise<SiteContent> {
   }
 
   if (thumbsRes.data?.length) {
-    content.thumbnails = thumbsRes.data.map((t) => ({
+    content.thumbnails = thumbsRes.data.map((t: any) => ({
       id: t.id,
       cloudinary_url: t.cloudinary_url,
       alt_text: t.alt_text ?? "portfolio",
@@ -109,7 +109,7 @@ async function fetchSiteContent(): Promise<SiteContent> {
   }
 
   if (testiRes.data?.length) {
-    content.testimonials = testiRes.data.map((t) => ({
+    content.testimonials = testiRes.data.map((t: any) => ({
       id: t.id,
       name: t.name,
       role: t.role ?? "",

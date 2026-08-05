@@ -53,6 +53,20 @@ const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className 
     }
   }, [isInView]);
 
+  // If component becomes visible, create the iframe automatically after idle/delay
+  useEffect(() => {
+    if (!isInView || isIframeReady) return;
+
+    const activate = () => setIsIframeReady(true);
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(activate, { timeout: 2000 });
+    } else {
+      const t = setTimeout(activate, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [isInView, isIframeReady]);
+
   const thumbnail = poster || `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
 
   const openIframe = () => setIsIframeReady(true);
@@ -74,7 +88,7 @@ const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className 
       ) : (
         <iframe
           title={title}
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           loading="lazy"

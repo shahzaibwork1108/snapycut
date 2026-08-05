@@ -55,7 +55,7 @@ export default function CarouselRow({
 
       const geometry = new THREE.PlaneGeometry(1, 1.3);
       const gap = 1.3;
-      const planes: THREE.Mesh[] = [];
+      const planes: any[] = [];
       const totalWidth = images.length * gap;
 
       // Texture loader manager ke sath
@@ -131,7 +131,7 @@ export default function CarouselRow({
         const intersects = raycaster.intersectObjects(planes);
 
         if (intersects.length > 0) {
-          const clickedPlane = intersects[0].object as THREE.Mesh;
+          const clickedPlane = intersects[0].object as any;
           onImageClick(clickedPlane.userData.imageSrc);
         }
       };
@@ -145,9 +145,9 @@ export default function CarouselRow({
         
         planes.forEach((p) => {
           p.geometry.dispose();
-          const mat = p.material as THREE.ShaderMaterial;
-          if (mat.uniforms.tex.value) mat.uniforms.tex.value.dispose();
-          mat.dispose();
+          const mat: any = p.material;
+          if (mat?.uniforms?.tex?.value) mat.uniforms.tex.value.dispose();
+          if (mat?.dispose) mat.dispose();
           scene.remove(p);
         });
 
