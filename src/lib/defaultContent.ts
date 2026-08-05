@@ -47,7 +47,7 @@ export const defaultContent: SiteContent = {
   images: {
     hero_bg: {
       image_key: "hero_bg",
-      cloudinary_url: "/assets/hero/hero-bg-image-1-opt.jpg",
+      cloudinary_url: "/assets/hero/hero-bg-image-1.png",
       alt_text: "Hero Background Mesh",
     },
     logo: {
