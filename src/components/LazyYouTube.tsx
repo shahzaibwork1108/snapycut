@@ -53,19 +53,6 @@ const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className 
     }
   }, [isInView]);
 
-  // If component becomes visible, create the iframe automatically after idle/delay
-  useEffect(() => {
-    if (!isInView || isIframeReady) return;
-
-    const activate = () => setIsIframeReady(true);
-
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(activate, { timeout: 2000 });
-    } else {
-      const t = setTimeout(activate, 1500);
-      return () => clearTimeout(t);
-    }
-  }, [isInView, isIframeReady]);
 
   const thumbnail = poster || `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
 

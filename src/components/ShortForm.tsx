@@ -214,8 +214,10 @@ function ShortForm({ onOpenBooking }: ShortFormProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex gap-3 sm:gap-4 w-max px-3 sm:px-4">
-          {duplicatedVideos.map((video, index) => (
+        <div
+          className={`video-marquee-track flex gap-3 sm:gap-4 w-max px-3 sm:px-4 ${(!isVisible || isHovered) ? 'paused' : ''}`}
+        >
+          {duplicatedShortVideos.map((video, index) => (
             <ShortFormCard key={`${video}-${index}`} src={video} index={index} />
           ))}
         </div>
