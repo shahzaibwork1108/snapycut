@@ -26,9 +26,13 @@ export default defineConfig(() => {
       include: ['react', 'react-dom', 'react-router-dom'],
     },
     build: {
-      modulePreload: false,
+      // ═══ MODULE PRELOAD: Generate <link rel="modulepreload"> for critical chunks
+      // to reduce the critical request chain depth ═══
+      modulePreload: { polyfill: false },
       // ═══ TARGET: Modern browsers — smaller, faster output ═══
       target: 'esnext',
+      // ═══ CSS CODE SPLITTING: Extract CSS into separate files for parallel loading ═══
+      cssCodeSplit: true,
       // ═══ CHUNK SPLITTING: Separate vendor code so browser can cache independently ═══
       rollupOptions: {
         output: {
@@ -39,8 +43,8 @@ export default defineConfig(() => {
             'vendor-supabase': ['@supabase/supabase-js'],
             // Icon set — split to avoid pulling it into the main shell
             'vendor-icons': ['lucide-react'],
-            // Markdown rendering — only needed on the content pages
-            'vendor-markdown': ['react-markdown', 'rehype-raw'],
+            // 3D rendering — only loaded if CarouselRow is ever used
+            'vendor-three': ['three'],
           },
         },
       },

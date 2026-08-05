@@ -42,16 +42,8 @@ function extractHtml(code) {
   return html.trim();
 }
 
-const privacyCode = fs.readFileSync('src/pages/PrivacyPolicy.tsx', 'utf8');
-const termsCode = fs.readFileSync('src/pages/TermsConditions.tsx', 'utf8');
-
-const pHTML = extractHtml(privacyCode);
-const tHTML = extractHtml(termsCode);
-
-let defaultsCode = fs.readFileSync('src/lib/sectionDefaults.ts', 'utf8');
-
-defaultsCode = defaultsCode.replace(/privacy_policy: \{\s*title: \"\",\s*title_highlight: \"\",\s*subtitle: \"\",\s*description: \"\",/, 'privacy_policy: {\n    title: "",\n    title_highlight: "",\n    subtitle: "",\n    description: `' + pHTML.replace(/`/g, '\\`') + '`,');
-defaultsCode = defaultsCode.replace(/terms_conditions: \{\s*title: \"\",\s*title_highlight: \"\",\s*subtitle: \"\",\s*description: \"\",/, 'terms_conditions: {\n    title: "",\n    title_highlight: "",\n    subtitle: "",\n    description: `' + tHTML.replace(/`/g, '\\`') + '`,');
-
-fs.writeFileSync('src/lib/sectionDefaults.ts', defaultsCode);
-console.log("Defaults updated.");
+// ═══ PERFORMANCE: Legal text is kept out of the main JS bundle.
+// The pages (PrivacyPolicy.tsx / TermsConditions.tsx) already have inline
+// fallback content, so we no longer inject the legal text into sectionDefaults.ts.
+// This keeps the main bundle small and defers legal content to lazy-loaded pages.
+console.log("Legal text is kept out of the main bundle for performance. Skipping injection into sectionDefaults.ts.");

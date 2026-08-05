@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+// THREE is dynamically imported to avoid loading the ~600KB library
+// in the main bundle. It's only fetched when this component is used.
+type ThreeModule = typeof import("three");
+let threeModule: ThreeModule | null = null;
+const loadThree = (): Promise<ThreeModule> => {
+  if (!threeModule) {
+    threeModule = import("three");
+  }
+  return threeModule;
+};
 
 interface CarouselRowProps {
   titleHighlighted: string;
@@ -34,134 +43,137 @@ export default function CarouselRow({
       const container = containerRef.current;
       if (!container) return;
 
-      const width = container.clientWidth || window.innerWidth;
-      const height = 350;
+      // Dynamically load THREE only when this component is actually rendered
+      loadThree().then((THREE) => {
+        const width = container.clientWidth || window.innerWidth;
+        const height = 350;
 
-      // 1. Scene setup
-      const scene = new THREE.Scene();
-      
-      // 2. Camera setup
-      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.z = 3.2;
-
-      // 3. Renderer setup
-      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(width, height);
-      container.appendChild(renderer.domElement);
-
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      const geometry = new THREE.PlaneGeometry(1, 1.3);
-      const gap = 1.3;
-      const planes: any[] = [];
-      const totalWidth = images.length * gap;
-
-      // Texture loader manager ke sath
-      const manager = new THREE.LoadingManager();
-      const loader = new THREE.TextureLoader(manager);
-
-      images.forEach((image, i) => {
-        const texture = loader.load(image);
-
-        const material = new THREE.ShaderMaterial({
-          uniforms: { tex: { value: texture }, curve: { value: 0.4 } },
-          vertexShader: `
-            uniform float curve;
-            varying vec2 vUv;
-            void main() {
-              vUv = uv;
-              vec4 pos = modelViewMatrix * vec4(position, 1.0);
-              pos.z += pow(pos.x, 2.0) * curve * 0.15; 
-              gl_Position = projectionMatrix * pos;
-            }
-          `,
-          fragmentShader: `
-            uniform sampler2D tex;
-            varying vec2 vUv;
-            void main() { gl_FragColor = texture2D(tex, vUv); }
-          `,
-          transparent: true,
-        });
-
-        const plane = new THREE.Mesh(geometry, material);
-        plane.position.set((i - images.length / 2) * gap, 0, 0);
-        plane.userData = { imageSrc: image };
-        scene.add(plane);
-        planes.push(plane);
-      });
-
-      // Resize event listener with rAF throttling to avoid forced reflows
-      let resizeRafId: number | null = null;
-      const handleResize = () => {
-        if (resizeRafId !== null) return;
-        resizeRafId = requestAnimationFrame(() => {
-          resizeRafId = null;
-          if (!container || !renderer || !camera) return;
-          const w = container.clientWidth;
-          camera.aspect = w / height;
-          camera.updateProjectionMatrix();
-          renderer.setSize(w, height);
-        });
-      };
-      window.addEventListener("resize", handleResize);
-
-      // Animation loop
-      const animate = () => {
-        if (!isHoveredRef.current) {
-          planes.forEach((p) => {
-            p.position.x += 0.005; // Marquee Speed
-            if (p.position.x > totalWidth / 2) {
-              p.position.x -= totalWidth;
-            }
-          });
-        }
-        renderer.render(scene, camera);
-        animationRef.current = requestAnimationFrame(animate);
-      };
-
-      // Sirf tabhi animation shuru hogi jab saari images pack ho kar load ho jayengi
-      manager.onLoad = () => {
-        animate();
-      };
-
-      // Click Handler
-      const handleCanvasClick = (event: MouseEvent) => {
-        const rect = renderer.domElement.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(planes);
-
-        if (intersects.length > 0) {
-          const clickedPlane = intersects[0].object as any;
-          onImageClick(clickedPlane.userData.imageSrc);
-        }
-      };
-      renderer.domElement.addEventListener("click", handleCanvasClick);
-
-      // Strict Cleanups to prevent black memory crashes
-      (container as any)._cleanup = () => {
-        if (animationRef.current) cancelAnimationFrame(animationRef.current);
-        if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
-        window.removeEventListener("resize", handleResize);
-        renderer.domElement.removeEventListener("click", handleCanvasClick);
+        // 1. Scene setup
+        const scene = new THREE.Scene();
         
-        planes.forEach((p) => {
-          p.geometry.dispose();
-          const mat: any = p.material;
-          if (mat?.uniforms?.tex?.value) mat.uniforms.tex.value.dispose();
-          if (mat?.dispose) mat.dispose();
-          scene.remove(p);
+        // 2. Camera setup
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+        camera.position.z = 3.2;
+
+        // 3. Renderer setup
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(width, height);
+        container.appendChild(renderer.domElement);
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const geometry = new THREE.PlaneGeometry(1, 1.3);
+        const gap = 1.3;
+        const planes: any[] = [];
+        const totalWidth = images.length * gap;
+
+        // Texture loader manager ke sath
+        const manager = new THREE.LoadingManager();
+        const loader = new THREE.TextureLoader(manager);
+
+        images.forEach((image, i) => {
+          const texture = loader.load(image);
+
+          const material = new THREE.ShaderMaterial({
+            uniforms: { tex: { value: texture }, curve: { value: 0.4 } },
+            vertexShader: `
+              uniform float curve;
+              varying vec2 vUv;
+              void main() {
+                vUv = uv;
+                vec4 pos = modelViewMatrix * vec4(position, 1.0);
+                pos.z += pow(pos.x, 2.0) * curve * 0.15; 
+                gl_Position = projectionMatrix * pos;
+              }
+            `,
+            fragmentShader: `
+              uniform sampler2D tex;
+              varying vec2 vUv;
+              void main() { gl_FragColor = texture2D(tex, vUv); }
+            `,
+            transparent: true,
+          });
+
+          const plane = new THREE.Mesh(geometry, material);
+          plane.position.set((i - images.length / 2) * gap, 0, 0);
+          plane.userData = { imageSrc: image };
+          scene.add(plane);
+          planes.push(plane);
         });
 
-        renderer.dispose();
-        if (container.contains(renderer.domElement)) {
-          container.removeChild(renderer.domElement);
-        }
-      };
+        // Resize event listener with rAF throttling to avoid forced reflows
+        let resizeRafId: number | null = null;
+        const handleResize = () => {
+          if (resizeRafId !== null) return;
+          resizeRafId = requestAnimationFrame(() => {
+            resizeRafId = null;
+            if (!container || !renderer || !camera) return;
+            const w = container.clientWidth;
+            camera.aspect = w / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, height);
+          });
+        };
+        window.addEventListener("resize", handleResize);
+
+        // Animation loop
+        const animate = () => {
+          if (!isHoveredRef.current) {
+            planes.forEach((p) => {
+              p.position.x += 0.005; // Marquee Speed
+              if (p.position.x > totalWidth / 2) {
+                p.position.x -= totalWidth;
+              }
+            });
+          }
+          renderer.render(scene, camera);
+          animationRef.current = requestAnimationFrame(animate);
+        };
+
+        // Sirf tabhi animation shuru hogi jab saari images pack ho kar load ho jayengi
+        manager.onLoad = () => {
+          animate();
+        };
+
+        // Click Handler
+        const handleCanvasClick = (event: MouseEvent) => {
+          const rect = renderer.domElement.getBoundingClientRect();
+          mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+          raycaster.setFromCamera(mouse, camera);
+          const intersects = raycaster.intersectObjects(planes);
+
+          if (intersects.length > 0) {
+            const clickedPlane = intersects[0].object as any;
+            onImageClick(clickedPlane.userData.imageSrc);
+          }
+        };
+        renderer.domElement.addEventListener("click", handleCanvasClick);
+
+        // Strict Cleanups to prevent black memory crashes
+        (container as any)._cleanup = () => {
+          if (animationRef.current) cancelAnimationFrame(animationRef.current);
+          if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+          window.removeEventListener("resize", handleResize);
+          renderer.domElement.removeEventListener("click", handleCanvasClick);
+          
+          planes.forEach((p) => {
+            p.geometry.dispose();
+            const mat: any = p.material;
+            if (mat?.uniforms?.tex?.value) mat.uniforms.tex.value.dispose();
+            if (mat?.dispose) mat.dispose();
+            scene.remove(p);
+          });
+
+          renderer.dispose();
+          if (container.contains(renderer.domElement)) {
+            container.removeChild(renderer.domElement);
+          }
+        };
+      });
     }, 100);
 
     return () => {
@@ -171,7 +183,7 @@ export default function CarouselRow({
         (container as any)._cleanup();
       }
     };
-  }, [images, isMounted]);
+  }, [images, isMounted, onImageClick]);
 
   if (!isMounted) return null;
 

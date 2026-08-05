@@ -30,7 +30,8 @@ async function fetchSiteContent(): Promise<SiteContent> {
   ]) as any;
   const [seoRes, sectionsRes, imagesRes, thumbsRes, videosRes, testiRes, clientRes] = resp;
 
-  const content: SiteContent = structuredClone(defaultContent);
+  // Use JSON round-trip instead of structuredClone — faster for plain data objects
+  const content: SiteContent = JSON.parse(JSON.stringify(defaultContent));
 
   if (seoRes.data) {
     content.seo = {
