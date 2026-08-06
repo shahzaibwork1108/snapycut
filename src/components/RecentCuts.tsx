@@ -83,7 +83,7 @@ const HorizontalVideo = ({ src }: { src: string }) => {
         preload="metadata"
       />
 
-      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
+      {/* Mute/Unmute button — only for native videos, LazyYouTube handles its own */}
       <button
         onClick={toggleMute}
         className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
@@ -180,7 +180,7 @@ const IntersectionVideo = ({ src }: { src: string }) => {
         preload="metadata"
       />
 
-      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
+      {/* Mute/Unmute button — only for native videos, LazyYouTube handles its own */}
       <button
         onClick={toggleMute}
         className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${

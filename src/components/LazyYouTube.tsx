@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, FC } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 
 interface Props {
   youtubeId: string;
@@ -7,6 +8,9 @@ interface Props {
   poster?: string; // optional thumbnail override
 }
 
+// Detect touch device
+const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 // LazyYouTube: renders a lightweight preview (thumbnail + play button).
 // It only creates the heavy YouTube iframe after the user explicitly clicks
 // the preview. This prevents YouTube JS/CSS from blocking the main thread
@@ -14,7 +18,11 @@ interface Props {
 const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className = "", poster }) => {
   const [isIframeReady, setIsIframeReady] = useState(false);
   const [isInView, setIsInView] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTouch] = useState(isTouchDevice);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   // Preconnect to YouTube when the component becomes visible, to reduce latency
   useEffect(() => {
@@ -67,15 +75,42 @@ const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className 
     }
   }, [isInView, isIframeReady]);
 
+  // Send command to YouTube iframe via postMessage
+  const sendCommand = (func: string, args: unknown[] = []) => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "*"
+    );
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMuted) {
+      sendCommand("unMute");
+    } else {
+      sendCommand("mute");
+    }
+    setIsMuted(!isMuted);
+  };
+
   const thumbnail = poster || `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
 
-  const openIframe = () => setIsIframeReady(true);
+  // origin param is required for iOS Safari to allow postMessage & autoplay
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const embedSrc = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${youtubeId}&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
 
   // Ensure iframe is only created after explicit user interaction
   return (
-    <div ref={wrapperRef} className={className}>
+    <div
+      ref={wrapperRef}
+      className={`relative ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {!isIframeReady ? (
-        <div className="lazy-youtube-preview relative w-full h-full bg-black" role="button" tabIndex={0} aria-label={`Play video: ${title}`} onClick={openIframe} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openIframe(); }}>
+        <div className="lazy-youtube-preview relative w-full h-full bg-black" role="button" tabIndex={0} aria-label={`Play video: ${title}`} onClick={() => setIsIframeReady(true)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsIframeReady(true); }}>
           <img src={thumbnail} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="rounded-full bg-white/95 h-16 w-16 flex items-center justify-center shadow-lg">
@@ -86,14 +121,28 @@ const LazyYouTube: FC<Props> = ({ youtubeId, title = "YouTube video", className 
           </div>
         </div>
       ) : (
-        <iframe
-          title={title}
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          loading="lazy"
-          className="w-full h-full"
-        />
+        <>
+          <iframe
+            ref={iframeRef}
+            title={title}
+            src={embedSrc}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            className="w-full h-full"
+          />
+
+          {/* Sound toggle button — always visible on touch devices, hover-only on desktop */}
+          <button
+            onClick={toggleMute}
+            className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
+              isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+            } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
+            aria-label={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+        </>
       )}
     </div>
   );

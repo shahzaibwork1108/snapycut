@@ -15,7 +15,6 @@ const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in 
 // ─── Single 16:9 video card with lazy loading + mute button ──────────────────
 const VideoCard = ({ src, index }: { src: string; index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Extract YouTube ID if it's a YT link
@@ -51,21 +50,9 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
     return () => observer.disconnect();
   }, [ytId]);
 
-  // Send postMessage command to YouTube iframe
-  const sendCommand = (func: string, args: unknown[] = []) => {
-    const iframe = iframeRef.current;
-    if (!iframe?.contentWindow) return;
-    iframe.contentWindow.postMessage(
-      JSON.stringify({ event: "command", func, args }),
-      "*"
-    );
-  };
-
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (ytId) {
-      isMuted ? sendCommand("unMute") : sendCommand("mute");
-    } else if (videoRef.current) {
+    if (videoRef.current) {
       videoRef.current.muted = !isMuted;
     }
     setIsMuted(!isMuted);
@@ -95,16 +82,18 @@ const VideoCard = ({ src, index }: { src: string; index: number }) => {
         />
       )}
 
-      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
-      <button
-        onClick={toggleMute}
-        className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
-          isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-        } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-      </button>
+      {/* Mute/Unmute button — only for native videos, LazyYouTube handles its own */}
+      {!ytId && (
+        <button
+          onClick={toggleMute}
+          className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
+            isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+          } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
+          aria-label={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
+      )}
 
       {/* Bottom gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-20" />

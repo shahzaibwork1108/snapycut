@@ -1,11 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useSiteContent } from "../context/SiteContentContext";
 import { getYoutubeIds, getSection } from "../lib/defaultContent";
-import { Volume2, VolumeX } from "lucide-react";
 import LazyYouTube from "./LazyYouTube";
-
-// Detect touch device
-const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
 interface RecentCutsProps {
     onOpenBooking: () => void;
@@ -14,53 +10,16 @@ interface RecentCutsProps {
 // Single card: autoplay muted, hover reveals custom mute button
 const AvatarVideoCard = ({ videoId, index }: { videoId: string; index: number }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-    const [isHovered, setIsHovered] = useState(false);
-    const [isMuted, setIsMuted] = useState(true);
-    const [isTouch] = useState(isTouchDevice);
-
-    // Send command to YouTube iframe via postMessage
-    const sendCommand = (func: string, args: unknown[] = []) => {
-        const iframe = iframeRef.current;
-        if (!iframe?.contentWindow) return;
-        iframe.contentWindow.postMessage(
-            JSON.stringify({ event: "command", func, args }),
-            "*"
-        );
-    };
-
-    const toggleMute = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (isMuted) {
-            sendCommand("unMute");
-        } else {
-            sendCommand("mute");
-        }
-        setIsMuted(!isMuted);
-    };
 
     // Use LazyYouTube so iframes are only created after user interaction.
     return (
         <div
             ref={containerRef}
             className="relative w-[180px] sm:w-[280px] aspect-[9/16] flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden bg-neutral-900 shadow-md sm:shadow-2xl group"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="absolute inset-0 w-full h-full scale-[1.05]">
                 <LazyYouTube youtubeId={videoId} title={`AI Avatar Video ${index}`} className="w-full h-full" />
             </div>
-
-            {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
-            <button
-                onClick={toggleMute}
-                className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
-                    isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-                } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
-                aria-label={isMuted ? "Unmute" : "Mute"}
-            >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-            </button>
 
             {/* Bottom gradient */}
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-20" />

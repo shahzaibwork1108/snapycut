@@ -21,7 +21,6 @@ const isTouchDevice = () => typeof window !== 'undefined' && ('ontouchstart' in 
 // Single card: autoplay muted, NO controls. Hover shows custom mute button only.
 const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -57,32 +56,13 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
     return () => observer.disconnect();
   }, [ytId]);
 
-  // Send command to YouTube iframe via postMessage
-  const sendCommand = (func: string, args: unknown[] = []) => {
-    const iframe = iframeRef.current;
-    if (!iframe?.contentWindow) return;
-    iframe.contentWindow.postMessage(
-      JSON.stringify({ event: "command", func, args }),
-      "*"
-    );
-  };
-
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (ytId) {
-      isMuted ? sendCommand("unMute") : sendCommand("mute");
-    } else if (videoRef.current) {
+    if (videoRef.current) {
       videoRef.current.muted = !isMuted;
     }
     setIsMuted(!isMuted);
   };
-
-  // controls=0 hides all YouTube UI
-  // origin param is required for iOS Safari to allow postMessage & autoplay
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const embedSrc = ytId
-    ? `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${ytId}&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`
-    : "";
 
   return (
     <div
@@ -92,15 +72,9 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {ytId ? (
-        <>
-          <div
-            className="w-full h-[390px] sm:h-[570px] relative overflow-hidden bg-black"
-          >
-              <LazyYouTube youtubeId={ytId} title={`Short Form ${index}`} className="w-full h-full" />
-          </div>
-          {/* Always-on overlay blocks iframe interaction */}
-          <div className="absolute inset-0 z-10" />
-        </>
+        <div className="w-full h-[390px] sm:h-[570px] relative overflow-hidden bg-black">
+          <LazyYouTube youtubeId={ytId} title={`Short Form ${index}`} className="w-full h-full" />
+        </div>
       ) : (
         /* Native video for direct mp4/cloudinary URLs — muted, no controls */
         <video
@@ -115,16 +89,18 @@ const ShortFormCard = ({ src, index }: { src: string; index: number }) => {
         />
       )}
 
-      {/* Mute/Unmute button — always visible on touch devices, hover-only on desktop */}
-      <button
-        onClick={toggleMute}
-        className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
-          isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-        } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-      </button>
+      {/* Mute/Unmute button — only for native videos, LazyYouTube handles its own */}
+      {!ytId && (
+        <button
+          onClick={toggleMute}
+          className={`absolute bottom-3 right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-white transition-all duration-200 ${
+            isTouch || isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+          } hover:bg-black/80 hover:border-[#c1eb40] hover:text-[#c1eb40] active:bg-black/80 active:border-[#c1eb40] active:text-[#c1eb40]`}
+          aria-label={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
+      )}
 
       {/* Bottom gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-20" />
